@@ -13,6 +13,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { MobileNav } from "@/components/landing/mobile-nav";
+import { seedInsights } from "@/lib/seed-data";
 
 const NAV_LINKS = [
   { href: "#how-it-works", label: "How It Works" },
@@ -316,6 +317,48 @@ export default function Home() {
                   {point.title}
                 </h3>
                 <p className="text-gw-text-gray">{point.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== COMMUNITY INSIGHTS ===== */}
+      <section className="bg-gw-bg-light py-20 lg:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <span className="inline-block bg-gw-blue/10 text-gw-blue px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              Community Insights
+            </span>
+            <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-gw-navy mb-6">
+              What 10,000+ Members Have Discovered
+            </h2>
+            <p className="text-lg text-gw-text-gray max-w-2xl mx-auto">
+              Real patterns surfaced from real experiences. These insights come
+              from our community&apos;s collective knowledge.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {seedInsights.slice(0, 6).map((insight) => (
+              <div
+                key={insight.stat}
+                className="bg-white rounded-2xl p-6 hover:shadow-lg transition-shadow duration-300"
+              >
+                <div className="flex items-start gap-4">
+                  <span className="text-3xl">{insight.icon}</span>
+                  <div>
+                    <p className="text-2xl font-bold text-gw-blue">
+                      {insight.stat}
+                    </p>
+                    <p className="mt-1 text-sm text-gw-text-gray">
+                      {insight.text}
+                    </p>
+                    <p className="mt-2 text-xs text-gw-text-gray/60">
+                      {insight.source}
+                    </p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
