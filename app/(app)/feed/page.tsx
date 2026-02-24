@@ -17,7 +17,7 @@ export default async function FeedPage() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const [checkinRes, flareRes, postsRes] = await Promise.all([
+  const [checkinRes, flareRes, postsRes, votesRes] = await Promise.all([
     supabase
       .from("checkins")
       .select("id")
@@ -35,9 +35,15 @@ export default async function FeedPage() {
       )
       .order("created_at", { ascending: false })
       .limit(20),
+    supabase
+      .from("votes")
+      .select("post_id")
+      .eq("user_id", user.id)
+      .not("post_id", "is", null),
   ]);
 
   const randomInsight = pickRandomInsight();
+  const votedPostIds = (votesRes.data ?? []).map((v) => v.post_id as string);
 
   return (
     <FeedClient
@@ -45,6 +51,7 @@ export default async function FeedPage() {
       activeFlareCount={flareRes.count ?? 0}
       posts={(postsRes.data as unknown as PostRow[]) ?? []}
       randomInsight={randomInsight}
+      votedPostIds={votedPostIds}
     />
   );
 }

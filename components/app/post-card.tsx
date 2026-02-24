@@ -1,6 +1,9 @@
-import Link from "next/link";
-import { MessageCircle, ThumbsUp } from "lucide-react";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { MessageCircle } from "lucide-react";
 import { POST_CATEGORIES } from "@/lib/constants";
+import { UpvoteButton } from "@/components/app/upvote-button";
 
 interface PostCardProps {
   id: string;
@@ -11,6 +14,7 @@ interface PostCardProps {
   createdAt: string;
   commentCount: number;
   upvotes: number;
+  hasVoted: boolean;
 }
 
 function timeAgo(dateStr: string): string {
@@ -37,15 +41,25 @@ export function PostCard({
   createdAt,
   commentCount,
   upvotes,
+  hasVoted,
 }: PostCardProps) {
+  const router = useRouter();
   const cat = POST_CATEGORIES.find((c) => c.value === category);
   const truncatedBody =
     body.length > 100 ? body.slice(0, 100).trimEnd() + "\u2026" : body;
 
   return (
-    <Link
-      href={`/post/${id}`}
-      className="block bg-white rounded-2xl p-4 hover:shadow-md transition-shadow"
+    <div
+      role="link"
+      tabIndex={0}
+      onClick={() => router.push(`/post/${id}`)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          router.push(`/post/${id}`);
+        }
+      }}
+      className="block bg-white rounded-2xl p-4 hover:shadow-md transition-shadow cursor-pointer"
     >
       {cat && (
         <span className="inline-block bg-gw-bg-light text-gw-navy text-xs font-medium px-2.5 py-1 rounded-full mb-2">
@@ -70,12 +84,13 @@ export function PostCard({
             <MessageCircle className="w-3.5 h-3.5" />
             {commentCount}
           </span>
-          <span className="flex items-center gap-1">
-            <ThumbsUp className="w-3.5 h-3.5" />
-            {upvotes}
-          </span>
+          <UpvoteButton
+            postId={id}
+            initialUpvotes={upvotes}
+            initialVoted={hasVoted}
+          />
         </span>
       </div>
-    </Link>
+    </div>
   );
 }

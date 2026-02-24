@@ -21,6 +21,7 @@ interface FeedClientProps {
   activeFlareCount: number;
   posts: PostRow[];
   randomInsight: Insight;
+  votedPostIds: string[];
 }
 
 export default function FeedClient({
@@ -28,6 +29,7 @@ export default function FeedClient({
   activeFlareCount,
   posts,
   randomInsight,
+  votedPostIds,
 }: FeedClientProps) {
 
   return (
@@ -117,6 +119,7 @@ export default function FeedClient({
                 createdAt={post.created_at}
                 commentCount={post.comment_count}
                 upvotes={post.upvotes}
+                hasVoted={votedPostIds.includes(post.id)}
               />
             ))}
           </div>

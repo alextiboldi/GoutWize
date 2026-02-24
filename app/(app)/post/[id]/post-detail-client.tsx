@@ -7,6 +7,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { POST_CATEGORIES, TRIED_IT_OPTIONS } from "@/lib/constants";
 import { TriedItBadge } from "@/components/app/tried-it-badge";
+import { UpvoteButton } from "@/components/app/upvote-button";
 
 export interface PostDetail {
   id: string;
@@ -45,11 +46,13 @@ function timeAgo(dateStr: string): string {
 interface PostDetailClientProps {
   post: PostDetail;
   initialComments: CommentRow[];
+  hasVoted: boolean;
 }
 
 export default function PostDetailClient({
   post,
   initialComments,
+  hasVoted,
 }: PostDetailClientProps) {
   const router = useRouter();
   const [comments, setComments] = useState<CommentRow[]>(initialComments);
@@ -139,6 +142,13 @@ export default function PostDetailClient({
           </span>
           <span>&middot;</span>
           <span>{timeAgo(post.created_at)}</span>
+          <span className="ml-auto">
+            <UpvoteButton
+              postId={post.id}
+              initialUpvotes={post.upvotes}
+              initialVoted={hasVoted}
+            />
+          </span>
         </div>
       </div>
 

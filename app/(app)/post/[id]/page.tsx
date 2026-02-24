@@ -13,7 +13,11 @@ export default async function PostDetailPage({
   const { id: postId } = await params;
   const supabase = await createClient();
 
-  const [postRes, commentsRes] = await Promise.all([
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const [postRes, commentsRes, voteRes] = await Promise.all([
     supabase
       .from("posts")
       .select(
@@ -29,6 +33,14 @@ export default async function PostDetailPage({
       .eq("post_id", postId)
       .order("upvotes", { ascending: false })
       .order("created_at", { ascending: false }),
+    user
+      ? supabase
+          .from("votes")
+          .select("id")
+          .eq("post_id", postId)
+          .eq("user_id", user.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   if (!postRes.data) notFound();
@@ -39,6 +51,7 @@ export default async function PostDetailPage({
       initialComments={
         (commentsRes.data as unknown as CommentRow[]) ?? []
       }
+      hasVoted={!!voteRes.data}
     />
   );
 }
