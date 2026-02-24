@@ -34,6 +34,13 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Authenticated user on /login → redirect to /feed
+  if (pathname === "/login" && user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/feed";
+    return NextResponse.redirect(url);
+  }
+
   // Allow public routes through
   if (PUBLIC_ROUTES.includes(pathname)) {
     return supabaseResponse;
