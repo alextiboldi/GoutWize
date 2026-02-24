@@ -53,7 +53,8 @@ export default function NewPostPage() {
         .single();
 
       if (insertError) {
-        setError("Failed to create post. Please try again.");
+        console.error("Post insert error:", insertError);
+        setError(insertError.message || "Failed to create post. Please try again.");
       } else if (data) {
         router.push(`/post/${data.id}`);
       }
