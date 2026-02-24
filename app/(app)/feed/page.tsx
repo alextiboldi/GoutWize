@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Flame, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -24,10 +24,11 @@ export default function FeedPage() {
   const [posts, setPosts] = useState<PostRow[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const randomInsight = useMemo(
-    () => seedInsights[Math.floor(Math.random() * seedInsights.length)],
-    [],
-  );
+  const [randomInsight, setRandomInsight] = useState(seedInsights[0]);
+
+  useEffect(() => {
+    setRandomInsight(seedInsights[Math.floor(Math.random() * seedInsights.length)]);
+  }, []);
 
   useEffect(() => {
     async function loadFeed() {
