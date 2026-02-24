@@ -68,7 +68,7 @@ export default function LoginPage() {
                 You&apos;re one step away from a community that{" "}
                 <span className="text-gw-cyan">gets it.</span>
               </h1>
-              <p className="mt-6 text-lg text-white/60 max-w-md">
+              <p className="mt-6 text-lg text-white/80 max-w-md">
                 Join thousands who are discovering what actually works for gout
                 — together.
               </p>
@@ -78,13 +78,13 @@ export default function LoginPage() {
               {TRUST_POINTS.map((point) => (
                 <div key={point.text} className="flex items-center gap-2">
                   <point.icon className="w-4 h-4 text-gw-green" />
-                  <span className="text-sm text-white/70">{point.text}</span>
+                  <span className="text-sm text-white/80">{point.text}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <p className="text-sm text-white/30">
+          <p className="text-sm text-white/50">
             &copy; 2026 GoutWize. All rights reserved.
           </p>
         </div>
@@ -106,7 +106,7 @@ export default function LoginPage() {
               className="inline-flex items-center gap-2 text-gw-text-gray hover:text-gw-navy transition-colors mb-8"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span className="text-sm font-medium">Back</span>
+              <span className="text-sm font-medium">Back to home</span>
             </Link>
             <div className="font-heading text-2xl font-bold text-gw-navy">
               Gout<span className="text-gw-blue">Wize</span>

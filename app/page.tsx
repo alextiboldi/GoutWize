@@ -384,6 +384,7 @@ export default function Home() {
                   alt="Unity and community connection"
                   width={800}
                   height={600}
+                  priority
                   className="w-full h-80 lg:h-96 object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-gw-navy/70 via-transparent to-transparent" />
@@ -423,9 +424,9 @@ export default function Home() {
                       <Check className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-white">
+                      <h3 className="font-semibold text-white">
                         {point.title}
-                      </h4>
+                      </h3>
                       <p className="text-gray-400 text-sm">
                         {point.description}
                       </p>
@@ -519,9 +520,9 @@ export default function Home() {
                       />
                     </div>
                     <div>
-                      <h4 className="font-bold text-gw-navy text-lg">
+                      <h3 className="font-bold text-gw-navy text-lg">
                         {feature.title}
-                      </h4>
+                      </h3>
                       <p className="text-gw-text-gray">
                         {feature.description}
                       </p>
@@ -631,7 +632,7 @@ export default function Home() {
 
             {Object.entries(FOOTER_LINKS).map(([title, links]) => (
               <div key={title}>
-                <h4 className="font-bold text-lg mb-4">{title}</h4>
+                <h3 className="font-bold text-lg mb-4">{title}</h3>
                 <ul className="space-y-3">
                   {links.map((link) => (
                     <li key={link.label}>
