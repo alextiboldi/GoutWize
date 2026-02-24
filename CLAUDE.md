@@ -6,14 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 GoutWize is a community health app for gout management built with Next.js (App Router), Tailwind CSS, Supabase (Postgres + Auth + Realtime), and deployed on Vercel. The MVP includes discussions, flare logging, daily check-ins, and seeded insights.
 
-## Commands
-
-```bash
-pnpm run dev      # Start dev server (http://localhost:3000)
-pnpm run build    # Production build
-pnpm run start    # Serve production build
-pnpm run lint     # ESLint (v9 flat config with Next.js Core Web Vitals + TypeScript rules)
-```
 
 Package manager is **pnpm**. No test framework is configured yet.
 
@@ -45,36 +37,13 @@ Package manager is **pnpm**. No test framework is configured yet.
 ## Architecture
 
 - `app/` — Next.js App Router pages and layouts. Server components by default.
-- `app/globals.css` — Tailwind v4 config with CSS custom properties for theming (light/dark via `prefers-color-scheme`)
-- `docs/plans/goutwize-mvp-plan.md` — Detailed MVP specification with 10 epics, database schema, design system, and build order. **Read this before implementing features.**
+- `app/globals.css` — Tailwind v4 config with CSS custom properties for theming (light/dark via `prefers-color-scheme`) 
+- `docs/plans/goutwize-day2-plan.md` — Detailed specification for day 2 of the MVP. **Read this before implementing features.**
+- `docs/DESIGN-SYSTEM.md` — Design system for the app. **Read this before implementing features.**
 
 ### Path Alias
 
 `@/*` maps to the project root (configured in `tsconfig.json`).
-
-### Planned Structure (from MVP plan)
-
-The app uses route groups: public routes (`/`, `/login`, `/auth/callback`) and authenticated routes under an `(app)/` group with a shared layout (bottom nav bar + floating flare button). Middleware enforces auth and redirects incomplete profiles to `/onboarding`.
-
-### Database Tables
-
-`profiles`, `posts`, `comments`, `votes`, `checkins`, `flares` — all with Row Level Security. Two Supabase clients needed: `createBrowserClient` for client components, `createServerClient` with cookie handling for server components.
-
-### Design System
-
-- Dark theme: `#0c0c14` background
-- Accent colors: blue `#2D9CDB`, green `#27AE60`, orange `#F2994A`, red `#EB5757`
-- Mobile-first, max-width ~448px centered on desktop
-- Emoji-heavy UI for categories, joints, badges
-
-### Environment Variables
-
-```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=
-DATABASE_URL=         # Pooled connection (port 6543) for Prisma Client
-DIRECT_URL=           # Direct connection (port 5432) for Prisma migrations
-```
 
 ### Git Commits
 - always analyse the package.json version before making any changes and update the version according to the semantic versioning rules
