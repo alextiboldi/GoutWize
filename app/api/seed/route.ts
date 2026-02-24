@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { seedPosts } from "@/lib/seed-posts";
 
-export async function POST() {
+export { seed as GET, seed as POST };
+
+async function seed() {
   const supabase = await createClient();
 
   const {
