@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "generated/prisma"
@@ -11,4 +5,106 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model Profile {
+  id             String    @id @db.Uuid
+  username       String    @unique
+  goutDuration   String?   @map("gout_duration")
+  flareFrequency String?   @map("flare_frequency")
+  approach       String?
+  reason         String?
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  posts    Post[]
+  comments Comment[]
+  votes    Vote[]
+  checkins Checkin[]
+  flares   Flare[]
+
+  @@map("profiles")
+}
+
+model Post {
+  id           String    @id @default(uuid()) @db.Uuid
+  authorId     String    @map("author_id") @db.Uuid
+  title        String
+  body         String
+  category     String
+  upvotes      Int       @default(0)
+  commentCount Int       @default(0) @map("comment_count")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  author   Profile   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments Comment[]
+  votes    Vote[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id       String  @id @default(uuid()) @db.Uuid
+  postId   String  @map("post_id") @db.Uuid
+  authorId String  @map("author_id") @db.Uuid
+  body     String
+  triedIt  String? @map("tried_it")
+  upvotes  Int     @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  post   Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author Profile @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  votes  Vote[]
+
+  @@map("comments")
+}
+
+model Vote {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  postId    String?  @map("post_id") @db.Uuid
+  commentId String?  @map("comment_id") @db.Uuid
+  value     Int      @default(1)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@unique([userId, commentId])
+  @@map("votes")
+}
+
+model Checkin {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  date      DateTime @db.Date
+  mood      String
+  hydration String
+  alcohol   String
+  stress    Int
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("checkins")
+}
+
+model Flare {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  joint      String
+  severity   Int
+  status     String    @default("active")
+  startedAt  DateTime  @default(now()) @map("started_at")
+  resolvedAt DateTime? @map("resolved_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("flares")
 }
