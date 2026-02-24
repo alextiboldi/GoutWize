@@ -13,7 +13,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE TRIGGER on_auth_user_created
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
@@ -28,7 +29,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE TRIGGER on_comment_inserted
+DROP TRIGGER IF EXISTS on_comment_inserted ON public.comments;
+CREATE TRIGGER on_comment_inserted
   AFTER INSERT ON public.comments
   FOR EACH ROW EXECUTE FUNCTION public.increment_comment_count();
 
@@ -43,21 +45,24 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE TRIGGER on_comment_deleted
+DROP TRIGGER IF EXISTS on_comment_deleted ON public.comments;
+CREATE TRIGGER on_comment_deleted
   AFTER DELETE ON public.comments
   FOR EACH ROW EXECUTE FUNCTION public.decrement_comment_count();
 
 -- ============================================================
--- Row Level Security
+-- Row Level Security (idempotent — drops existing policies first)
 -- ============================================================
 
 -- profiles: publicly readable, owner can update
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Profiles are publicly readable" ON public.profiles;
 CREATE POLICY "Profiles are publicly readable"
   ON public.profiles FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile"
   ON public.profiles FOR UPDATE
   USING (id = auth.uid());
@@ -65,18 +70,22 @@ CREATE POLICY "Users can update own profile"
 -- posts: publicly readable, author can insert/update/delete
 ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Posts are publicly readable" ON public.posts;
 CREATE POLICY "Posts are publicly readable"
   ON public.posts FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Authenticated users can create posts" ON public.posts;
 CREATE POLICY "Authenticated users can create posts"
   ON public.posts FOR INSERT
   WITH CHECK (author_id = auth.uid());
 
+DROP POLICY IF EXISTS "Authors can update own posts" ON public.posts;
 CREATE POLICY "Authors can update own posts"
   ON public.posts FOR UPDATE
   USING (author_id = auth.uid());
 
+DROP POLICY IF EXISTS "Authors can delete own posts" ON public.posts;
 CREATE POLICY "Authors can delete own posts"
   ON public.posts FOR DELETE
   USING (author_id = auth.uid());
@@ -84,14 +93,17 @@ CREATE POLICY "Authors can delete own posts"
 -- comments: publicly readable, author can insert/delete
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Comments are publicly readable" ON public.comments;
 CREATE POLICY "Comments are publicly readable"
   ON public.comments FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Authenticated users can create comments" ON public.comments;
 CREATE POLICY "Authenticated users can create comments"
   ON public.comments FOR INSERT
   WITH CHECK (author_id = auth.uid());
 
+DROP POLICY IF EXISTS "Authors can delete own comments" ON public.comments;
 CREATE POLICY "Authors can delete own comments"
   ON public.comments FOR DELETE
   USING (author_id = auth.uid());
@@ -99,14 +111,17 @@ CREATE POLICY "Authors can delete own comments"
 -- votes: scoped to authenticated user
 ALTER TABLE public.votes ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read own votes" ON public.votes;
 CREATE POLICY "Users can read own votes"
   ON public.votes FOR SELECT
   USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can create own votes" ON public.votes;
 CREATE POLICY "Users can create own votes"
   ON public.votes FOR INSERT
   WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can delete own votes" ON public.votes;
 CREATE POLICY "Users can delete own votes"
   ON public.votes FOR DELETE
   USING (user_id = auth.uid());
@@ -114,14 +129,17 @@ CREATE POLICY "Users can delete own votes"
 -- checkins: scoped to authenticated user
 ALTER TABLE public.checkins ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read own checkins" ON public.checkins;
 CREATE POLICY "Users can read own checkins"
   ON public.checkins FOR SELECT
   USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can create own checkins" ON public.checkins;
 CREATE POLICY "Users can create own checkins"
   ON public.checkins FOR INSERT
   WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can update own checkins" ON public.checkins;
 CREATE POLICY "Users can update own checkins"
   ON public.checkins FOR UPDATE
   USING (user_id = auth.uid());
@@ -129,14 +147,17 @@ CREATE POLICY "Users can update own checkins"
 -- flares: scoped to authenticated user
 ALTER TABLE public.flares ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read own flares" ON public.flares;
 CREATE POLICY "Users can read own flares"
   ON public.flares FOR SELECT
   USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can create own flares" ON public.flares;
 CREATE POLICY "Users can create own flares"
   ON public.flares FOR INSERT
   WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can update own flares" ON public.flares;
 CREATE POLICY "Users can update own flares"
   ON public.flares FOR UPDATE
   USING (user_id = auth.uid());
