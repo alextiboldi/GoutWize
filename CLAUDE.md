@@ -21,7 +21,7 @@ Package manager is **pnpm**. No test framework is configured yet.
 
 - **Next.js 16** (App Router) with React 19 and TypeScript 5.9 (strict mode)
 - **Tailwind CSS v4** via `@tailwindcss/postcss` — uses modern `@import "tailwindcss"` syntax and `@theme inline` blocks
-- **Supabase** for Postgres DB, Auth (Google OAuth + Magic Link), and Realtime
+- **Supabase** for Postgres DB, Auth (Magic Link only), and Realtime
 - **Vercel** for deployment
 - **Tailwind CSS v4** (using `@tailwindcss/postcss` plugin, `@import "tailwindcss"` syntax)
 - **pnpm** as package manager
@@ -39,6 +39,7 @@ Package manager is **pnpm**. No test framework is configured yet.
 - **clsx** + **tailwind-merge** for CSS class merging
 - **Release Please** for release management
 - **Semantic Versioning** for versioning
+
 
 
 ## Architecture
@@ -69,6 +70,15 @@ The app uses route groups: public routes (`/`, `/login`, `/auth/callback`) and a
 ### Environment Variables
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=<supabase-url>
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=
+DATABASE_URL=         # Pooled connection (port 6543) for Prisma Client
+DIRECT_URL=           # Direct connection (port 5432) for Prisma migrations
 ```
+
+### Git Commits
+- always analyse the package.json version before making any changes and update the version according to the semantic versioning rules
+
+
+### General
+- if a nodejs package is missing, NEVER install it yourself! ALWAYS ask me to install it for you by giving me the command to run
