@@ -2,13 +2,11 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-plus-jakarta);
+  --font-heading: var(--font-outfit);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -47,46 +45,54 @@
   --radius-4xl: calc(var(--radius) + 16px);
 
   /* GoutWize brand colors */
-  --color-gw-blue: #2D9CDB;
-  --color-gw-green: #27AE60;
-  --color-gw-orange: #F2994A;
-  --color-gw-red: #EB5757;
-  --color-gw-muted: #8899aa;
+  --color-gw-blue: #4A7C9E;
+  --color-gw-blue-dark: #3A6280;
+  --color-gw-navy: #2C3E50;
+  --color-gw-navy-deep: #1a252f;
+  --color-gw-orange: #E8956F;
+  --color-gw-green: #7FB069;
+  --color-gw-gold: #F4D35E;
+  --color-gw-gold-dark: #d4a712;
+  --color-gw-cyan: #A8DADC;
+  --color-gw-bg-light: #EFF6FA;
+  --color-gw-bg-mid: #E3EDF4;
+  --color-gw-border: #D6E4ED;
+  --color-gw-text-gray: #6C757D;
 }
 
 :root {
   --radius: 0.75rem;
-  --background: #0c0c14;
-  --foreground: #ededed;
-  --card: rgba(255, 255, 255, 0.04);
-  --card-foreground: #ededed;
-  --popover: #16162a;
-  --popover-foreground: #ededed;
-  --primary: #2D9CDB;
+  --background: #ffffff;
+  --foreground: #2C3E50;
+  --card: #ffffff;
+  --card-foreground: #2C3E50;
+  --popover: #ffffff;
+  --popover-foreground: #2C3E50;
+  --primary: #4A7C9E;
   --primary-foreground: #ffffff;
-  --secondary: rgba(255, 255, 255, 0.06);
-  --secondary-foreground: #ededed;
-  --muted: rgba(255, 255, 255, 0.06);
-  --muted-foreground: #8899aa;
-  --accent: rgba(255, 255, 255, 0.08);
-  --accent-foreground: #ededed;
+  --secondary: #EFF6FA;
+  --secondary-foreground: #2C3E50;
+  --muted: #EFF6FA;
+  --muted-foreground: #6C757D;
+  --accent: #E3EDF4;
+  --accent-foreground: #2C3E50;
   --destructive: #EB5757;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.15);
-  --ring: #2D9CDB;
-  --chart-1: #2D9CDB;
-  --chart-2: #27AE60;
-  --chart-3: #F2994A;
-  --chart-4: #EB5757;
-  --chart-5: #BB6BD9;
-  --sidebar: #0c0c14;
-  --sidebar-foreground: #ededed;
-  --sidebar-primary: #2D9CDB;
+  --border: #D6E4ED;
+  --input: #D6E4ED;
+  --ring: #4A7C9E;
+  --chart-1: #4A7C9E;
+  --chart-2: #7FB069;
+  --chart-3: #E8956F;
+  --chart-4: #F4D35E;
+  --chart-5: #A8DADC;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #2C3E50;
+  --sidebar-primary: #4A7C9E;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(255, 255, 255, 0.08);
-  --sidebar-accent-foreground: #ededed;
-  --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #2D9CDB;
+  --sidebar-accent: #EFF6FA;
+  --sidebar-accent-foreground: #2C3E50;
+  --sidebar-border: #D6E4ED;
+  --sidebar-ring: #4A7C9E;
 }
 
 @layer base {
