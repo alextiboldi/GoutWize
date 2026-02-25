@@ -52,6 +52,7 @@ export default function CheckinPage() {
 
       const { error: upsertError } = await supabase.from("checkins").upsert(
         {
+          id: crypto.randomUUID(),
           user_id: user.id,
           date: today,
           mood,
@@ -60,7 +61,7 @@ export default function CheckinPage() {
           stress,
           note: note.trim() || null,
         },
-        { onConflict: "user_id,date" },
+        { onConflict: "user_id,date", ignoreDuplicates: false },
       );
 
       if (upsertError) {
