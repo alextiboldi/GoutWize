@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { FLARE_JOINTS } from "@/lib/constants";
+import { timeAgo } from "@/lib/utils";
 
 export interface ProfileData {
   username: string;
@@ -308,7 +309,7 @@ export default function ProfileClient({
                       {flare.severity}/10
                     </p>
                     <p className="text-xs text-gw-text-gray">
-                      {new Date(flare.started_at).toLocaleDateString()} &middot;{" "}
+                      {timeAgo(flare.started_at)} &middot;{" "}
                       {flareDuration(flare.started_at, flare.resolved_at)}
                     </p>
                   </div>
