@@ -24,6 +24,7 @@ interface FeedClientProps {
   posts: PostRow[];
   randomInsight: Insight;
   votedPostIds: string[];
+  checkinStreak: number;
 }
 
 export default function FeedClient({
@@ -32,6 +33,7 @@ export default function FeedClient({
   posts,
   randomInsight,
   votedPostIds,
+  checkinStreak,
 }: FeedClientProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"newest" | "discussed">("newest");
@@ -83,8 +85,8 @@ export default function FeedClient({
         </h1>
       </div>
 
-      {/* Check-in nudge */}
-      {!checkedInToday && (
+      {/* Check-in nudge or streak card */}
+      {!checkedInToday ? (
         <Link
           href="/checkin"
           className="flex items-center gap-3 bg-white rounded-2xl p-4 border-l-4 border-gw-blue hover:shadow-md transition-shadow"
@@ -102,6 +104,24 @@ export default function FeedClient({
           </div>
           <ArrowRight className="w-4 h-4 text-gw-text-gray shrink-0" />
         </Link>
+      ) : (
+        <div className="flex items-center gap-3 bg-white rounded-2xl p-4 border-l-4 border-gw-orange">
+          <div className="w-10 h-10 bg-gw-orange/10 rounded-full flex items-center justify-center shrink-0">
+            <Flame className="w-5 h-5 text-gw-orange" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm text-gw-navy">
+              {checkinStreak <= 1
+                ? "First check-in today! Start building your streak."
+                : `${checkinStreak}-day check-in streak!`}
+            </p>
+            <p className="text-xs text-gw-text-gray">
+              {checkinStreak <= 1
+                ? "Come back tomorrow to keep it going"
+                : "Keep it up — consistency is key"}
+            </p>
+          </div>
+        </div>
       )}
 
       {/* Insight card */}

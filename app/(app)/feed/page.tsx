@@ -17,7 +17,7 @@ export default async function FeedPage() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const [checkinRes, flareRes, postsRes, votesRes] = await Promise.all([
+  const [checkinRes, flareRes, postsRes, votesRes, streakRes] = await Promise.all([
     supabase
       .from("checkins")
       .select("id")
@@ -40,6 +40,7 @@ export default async function FeedPage() {
       .select("post_id")
       .eq("user_id", user.id)
       .not("post_id", "is", null),
+    supabase.rpc("get_checkin_streak", { p_user_id: user.id }),
   ]);
 
   const randomInsight = pickRandomInsight();
@@ -52,6 +53,7 @@ export default async function FeedPage() {
       posts={(postsRes.data as unknown as PostRow[]) ?? []}
       randomInsight={randomInsight}
       votedPostIds={votedPostIds}
+      checkinStreak={(streakRes.data as number) ?? 0}
     />
   );
 }
