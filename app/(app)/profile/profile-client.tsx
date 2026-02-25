@@ -11,6 +11,7 @@ import {
   ClipboardCheck,
   MessageCircle,
   Zap,
+  Trophy,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -27,6 +28,7 @@ export interface Stats {
   checkins: number;
   comments: number;
   currentStreak: number;
+  longestStreak: number;
 }
 
 const DURATION_LABELS: Record<string, string> = {
@@ -126,6 +128,12 @@ export default function ProfileClient({
       icon: Zap,
       label: "Day streak",
       value: stats.currentStreak,
+      color: "text-gw-gold",
+    },
+    {
+      icon: Trophy,
+      label: "Best streak",
+      value: stats.longestStreak,
       color: "text-gw-gold",
     },
     {

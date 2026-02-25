@@ -14,6 +14,7 @@ model Profile {
   flareFrequency String?   @map("flare_frequency")
   approach       String?
   reason         String?
+  longestStreak  Int       @default(0) @map("longest_streak")
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
 

@@ -16,7 +16,7 @@ export default async function ProfilePage() {
   const [profileRes, flaresRes, checkinsRes, commentsRes, streakRes] = await Promise.all([
     supabase
       .from("profiles")
-      .select("username, gout_duration, flare_frequency, approach, reason")
+      .select("username, gout_duration, flare_frequency, approach, reason, longest_streak")
       .eq("id", user.id)
       .single(),
     supabase
@@ -41,6 +41,7 @@ export default async function ProfilePage() {
     checkins: checkinsRes.count ?? 0,
     comments: commentsRes.count ?? 0,
     currentStreak: (streakRes.data as number) ?? 0,
+    longestStreak: (profileRes.data as unknown as { longest_streak: number }).longest_streak ?? 0,
   };
 
   return (
