@@ -34,10 +34,17 @@ export default function FeedClient({
   votedPostIds,
 }: FeedClientProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<"newest" | "discussed">("newest");
 
   const filteredPosts = activeCategory
     ? posts.filter((p) => p.category === activeCategory)
     : posts;
+
+  const sortedPosts = [...filteredPosts].sort((a, b) =>
+    sortBy === "discussed"
+      ? b.comment_count - a.comment_count
+      : new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  );
 
   return (
     <div className="space-y-4">
@@ -146,9 +153,35 @@ export default function FeedClient({
           ))}
         </div>
 
-        {filteredPosts.length > 0 ? (
+        {/* Sort toggle */}
+        <div className="flex gap-1 mb-3 bg-gw-bg-light rounded-lg p-0.5 w-fit">
+          <button
+            type="button"
+            onClick={() => setSortBy("newest")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              sortBy === "newest"
+                ? "bg-white text-gw-navy shadow-sm"
+                : "text-gw-text-gray hover:text-gw-navy"
+            }`}
+          >
+            Newest
+          </button>
+          <button
+            type="button"
+            onClick={() => setSortBy("discussed")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              sortBy === "discussed"
+                ? "bg-white text-gw-navy shadow-sm"
+                : "text-gw-text-gray hover:text-gw-navy"
+            }`}
+          >
+            Most discussed
+          </button>
+        </div>
+
+        {sortedPosts.length > 0 ? (
           <div className="space-y-3">
-            {filteredPosts.map((post) => (
+            {sortedPosts.map((post) => (
               <PostCard
                 key={post.id}
                 id={post.id}
