@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Flame, Sparkles } from "lucide-react";
 import type { Insight } from "@/lib/types";
 import { PostCard } from "@/components/app/post-card";
+import { POST_CATEGORIES } from "@/lib/constants";
 
 export interface PostRow {
   id: string;
@@ -31,6 +33,11 @@ export default function FeedClient({
   randomInsight,
   votedPostIds,
 }: FeedClientProps) {
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const filteredPosts = activeCategory
+    ? posts.filter((p) => p.category === activeCategory)
+    : posts;
 
   return (
     <div className="space-y-4">
@@ -106,9 +113,42 @@ export default function FeedClient({
           Discussions
         </h2>
 
-        {posts.length > 0 ? (
+        {/* Category filter chips */}
+        <div className="flex gap-2 overflow-x-auto pb-3 -mx-1 px-1 scrollbar-hide">
+          <button
+            type="button"
+            onClick={() => setActiveCategory(null)}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+              activeCategory === null
+                ? "bg-gw-blue text-white"
+                : "bg-gw-bg-light text-gw-navy hover:bg-gw-bg-mid"
+            }`}
+          >
+            All
+          </button>
+          {POST_CATEGORIES.map((cat) => (
+            <button
+              key={cat.value}
+              type="button"
+              onClick={() =>
+                setActiveCategory(
+                  activeCategory === cat.value ? null : cat.value,
+                )
+              }
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                activeCategory === cat.value
+                  ? "bg-gw-blue text-white"
+                  : "bg-gw-bg-light text-gw-navy hover:bg-gw-bg-mid"
+              }`}
+            >
+              {cat.emoji} {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {filteredPosts.length > 0 ? (
           <div className="space-y-3">
-            {posts.map((post) => (
+            {filteredPosts.map((post) => (
               <PostCard
                 key={post.id}
                 id={post.id}
@@ -122,6 +162,21 @@ export default function FeedClient({
                 hasVoted={votedPostIds.includes(post.id)}
               />
             ))}
+          </div>
+        ) : activeCategory ? (
+          <div className="bg-white rounded-2xl p-8 text-center">
+            <p className="text-3xl mb-3">🔍</p>
+            <p className="font-semibold text-gw-navy">No posts in this category</p>
+            <p className="mt-1 text-sm text-gw-text-gray">
+              Try a different filter or start a new discussion!
+            </p>
+            <button
+              type="button"
+              onClick={() => setActiveCategory(null)}
+              className="inline-block mt-4 bg-gw-blue text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-gw-blue-dark transition-colors"
+            >
+              Show All
+            </button>
           </div>
         ) : (
           <div className="bg-white rounded-2xl p-8 text-center">
