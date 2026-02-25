@@ -158,9 +158,16 @@ export default function PostDetailClient({
       <div className="my-4 border-t border-gw-border" />
 
       {/* Comments header */}
-      <h2 className="font-semibold text-sm text-gw-navy mb-3">
-        {comments.length} {comments.length === 1 ? "Reply" : "Replies"}
-      </h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="font-semibold text-sm text-gw-navy">
+          {comments.length} {comments.length === 1 ? "Reply" : "Replies"}
+        </h2>
+        {comments.length > 1 && (
+          <span className="text-xs text-gw-text-gray">
+            Sorted by most helpful
+          </span>
+        )}
+      </div>
 
       {/* Comment list */}
       {comments.length > 0 ? (
