@@ -14,6 +14,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { FLARE_JOINTS } from "@/lib/constants";
 
 export interface ProfileData {
   username: string;
@@ -29,6 +30,15 @@ export interface Stats {
   comments: number;
   currentStreak: number;
   longestStreak: number;
+}
+
+export interface FlareHistoryRow {
+  id: string;
+  joint: string;
+  severity: number;
+  status: string;
+  started_at: string;
+  resolved_at: string | null;
 }
 
 const DURATION_LABELS: Record<string, string> = {
@@ -55,11 +65,26 @@ const APPROACH_LABELS: Record<string, string> = {
 interface ProfileClientProps {
   profile: ProfileData;
   stats: Stats;
+  flareHistory: FlareHistoryRow[];
 }
+
+function flareDuration(startedAt: string, resolvedAt: string | null): string {
+  const start = new Date(startedAt).getTime();
+  const end = resolvedAt ? new Date(resolvedAt).getTime() : Date.now();
+  const days = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
+  return days === 1 ? "1 day" : `${days} days`;
+}
+
+const STATUS_COLORS: Record<string, string> = {
+  active: "bg-red-100 text-red-600",
+  improving: "bg-yellow-100 text-yellow-700",
+  resolved: "bg-green-100 text-green-700",
+};
 
 export default function ProfileClient({
   profile: initialProfile,
   stats,
+  flareHistory,
 }: ProfileClientProps) {
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileData>(initialProfile);
@@ -237,6 +262,52 @@ export default function ProfileClient({
             </p>
           </div>
         ))}
+      </div>
+
+      {/* Flare History */}
+      <div className="mb-4">
+        <p className="text-xs font-medium text-gw-text-gray mb-3">
+          Flare History
+        </p>
+        {flareHistory.length > 0 ? (
+          <div className="space-y-2">
+            {flareHistory.map((flare) => {
+              const jointInfo = FLARE_JOINTS.find((j) => j.value === flare.joint);
+              const statusClass = STATUS_COLORS[flare.status] ?? "bg-gw-bg-light text-gw-text-gray";
+              return (
+                <div
+                  key={flare.id}
+                  className="bg-white rounded-xl p-4 flex items-center gap-3"
+                >
+                  <span className="text-xl shrink-0">
+                    {jointInfo?.emoji ?? "📍"}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gw-navy">
+                      {jointInfo?.label ?? flare.joint} &middot; Severity{" "}
+                      {flare.severity}/10
+                    </p>
+                    <p className="text-xs text-gw-text-gray">
+                      {new Date(flare.started_at).toLocaleDateString()} &middot;{" "}
+                      {flareDuration(flare.started_at, flare.resolved_at)}
+                    </p>
+                  </div>
+                  <span
+                    className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize ${statusClass}`}
+                  >
+                    {flare.status}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl p-6 text-center">
+            <p className="text-sm text-gw-text-gray">
+              No flares logged — hopefully it stays that way! 🤞
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Sign out */}
