@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Home, PenSquare, ClipboardCheck, User } from "lucide-react";
 
 const TABS = [
@@ -13,6 +13,14 @@ const TABS = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  function handleTabClick(e: React.MouseEvent, href: string) {
+    if (href === "/feed" && pathname === "/feed") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gw-border">
@@ -23,6 +31,7 @@ export function BottomNav() {
             <Link
               key={tab.href}
               href={tab.href}
+              onClick={(e) => handleTabClick(e, tab.href)}
               className={`flex flex-col items-center justify-center gap-0.5 w-16 py-1 rounded-lg transition-colors ${
                 isActive
                   ? "text-gw-blue"
