@@ -227,9 +227,13 @@ export default function PostDetailClient({
           ))}
         </div>
       ) : (
-        <p className="text-sm text-gw-text-gray text-center py-4">
-          No replies yet. Be the first!
-        </p>
+        <div className="bg-white rounded-2xl p-6 text-center">
+          <p className="text-3xl mb-2">💬</p>
+          <p className="font-semibold text-gw-navy">No replies yet</p>
+          <p className="text-sm text-gw-text-gray mt-1">
+            Share your experience below.
+          </p>
+        </div>
       )}
 
       {/* Comment form or CTA */}

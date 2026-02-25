@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Pencil,
   Check,
@@ -284,6 +285,23 @@ export default function ProfileClient({
           </div>
         ))}
       </div>
+
+      {/* Check-in nudge */}
+      {stats.checkins === 0 && (
+        <Link
+          href="/checkin"
+          className="block bg-white rounded-2xl p-6 text-center mb-4 hover:shadow-md transition-shadow"
+        >
+          <p className="text-3xl mb-2">📋</p>
+          <p className="font-semibold text-gw-navy">No check-ins yet</p>
+          <p className="text-sm text-gw-text-gray mt-1">
+            Start your first check-in to begin tracking patterns.
+          </p>
+          <span className="inline-block mt-3 bg-gw-blue text-white px-6 py-2.5 rounded-lg font-semibold text-sm">
+            Check in now
+          </span>
+        </Link>
+      )}
 
       {/* Flare History */}
       <div className="mb-4">
