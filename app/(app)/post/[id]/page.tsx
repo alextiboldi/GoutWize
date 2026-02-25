@@ -61,14 +61,14 @@ export default async function PostDetailPage({
     supabase
       .from("posts")
       .select(
-        "id, title, body, category, upvotes, comment_count, created_at, profiles(username)",
+        "id, title, body, category, upvotes, comment_count, created_at, author_id, profiles(username)",
       )
       .eq("id", postId)
       .single(),
     supabase
       .from("comments")
       .select(
-        "id, body, tried_it, upvotes, created_at, profiles(username)",
+        "id, body, tried_it, upvotes, created_at, author_id, profiles(username)",
       )
       .eq("post_id", postId)
       .order("upvotes", { ascending: false })
@@ -105,6 +105,7 @@ export default async function PostDetailPage({
       hasVoted={!!voteRes.data}
       votedCommentIds={votedCommentIds}
       isAuthenticated={!!user}
+      currentUserId={user?.id ?? null}
     />
   );
 }

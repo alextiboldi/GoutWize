@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Send, Share2, Check } from "lucide-react";
+import { ArrowLeft, Send, Share2, Check, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { POST_CATEGORIES, TRIED_IT_OPTIONS } from "@/lib/constants";
@@ -19,6 +19,7 @@ export interface PostDetail {
   upvotes: number;
   comment_count: number;
   created_at: string;
+  author_id: string;
   profiles: { username: string };
 }
 
@@ -28,6 +29,7 @@ export interface CommentRow {
   tried_it: string | null;
   upvotes: number;
   created_at: string;
+  author_id: string;
   profiles: { username: string };
 }
 
@@ -37,6 +39,7 @@ interface PostDetailClientProps {
   hasVoted: boolean;
   votedCommentIds: string[];
   isAuthenticated: boolean;
+  currentUserId: string | null;
 }
 
 export default function PostDetailClient({
@@ -45,6 +48,7 @@ export default function PostDetailClient({
   hasVoted,
   votedCommentIds,
   isAuthenticated,
+  currentUserId,
 }: PostDetailClientProps) {
   const router = useRouter();
   const [comments, setComments] = useState<CommentRow[]>(initialComments);
@@ -55,6 +59,27 @@ export default function PostDetailClient({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [confirmDeletePost, setConfirmDeletePost] = useState(false);
+  const [confirmDeleteComment, setConfirmDeleteComment] = useState<string | null>(null);
+
+  async function handleDeletePost() {
+    const supabase = createClient();
+    const { error } = await supabase.from("posts").delete().eq("id", post.id);
+    if (!error) {
+      useToastStore.getState().add("Post deleted");
+      router.push("/feed");
+    }
+  }
+
+  async function handleDeleteComment(commentId: string) {
+    const supabase = createClient();
+    const { error } = await supabase.from("comments").delete().eq("id", commentId);
+    if (!error) {
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      useToastStore.getState().add("Comment deleted");
+    }
+    setConfirmDeleteComment(null);
+  }
 
   async function handleShare() {
     const url = `${window.location.origin}/post/${post.id}`;
@@ -107,7 +132,7 @@ export default function PostDetailClient({
           body: commentBody.trim(),
           tried_it: triedIt,
         })
-        .select("id, body, tried_it, upvotes, created_at, profiles(username)")
+        .select("id, body, tried_it, upvotes, created_at, author_id, profiles(username)")
         .single();
 
       if (insertError) {
@@ -180,6 +205,14 @@ export default function PostDetailClient({
                 <Share2 className="w-4 h-4" />
               )}
             </button>
+            {currentUserId === post.author_id && (
+              <button
+                onClick={() => setConfirmDeletePost(true)}
+                className="text-gw-text-gray hover:text-red-500 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
           </span>
         </div>
       </div>
@@ -218,12 +251,20 @@ export default function PostDetailClient({
                 </span>
                 <span>&middot;</span>
                 <span>{timeAgo(comment.created_at)}</span>
-                <span className="ml-auto">
+                <span className="ml-auto flex items-center gap-3">
                   <UpvoteButton
                     commentId={comment.id}
                     initialUpvotes={comment.upvotes}
                     initialVoted={votedCommentIds.includes(comment.id)}
                   />
+                  {currentUserId === comment.author_id && (
+                    <button
+                      onClick={() => setConfirmDeleteComment(comment.id)}
+                      className="text-gw-text-gray hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </span>
               </div>
             </div>
@@ -316,6 +357,62 @@ export default function PostDetailClient({
           >
             Get started
           </Link>
+        </div>
+      )}
+
+      {/* Delete post confirmation */}
+      {confirmDeletePost && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+            <p className="font-semibold text-gw-navy text-center">
+              Delete this post?
+            </p>
+            <p className="text-sm text-gw-text-gray text-center mt-1">
+              This can&apos;t be undone.
+            </p>
+            <div className="flex gap-3 mt-5">
+              <button
+                onClick={() => setConfirmDeletePost(false)}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium text-gw-navy bg-gw-bg-light hover:bg-gw-bg-mid transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeletePost}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete comment confirmation */}
+      {confirmDeleteComment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+            <p className="font-semibold text-gw-navy text-center">
+              Delete this comment?
+            </p>
+            <p className="text-sm text-gw-text-gray text-center mt-1">
+              This can&apos;t be undone.
+            </p>
+            <div className="flex gap-3 mt-5">
+              <button
+                onClick={() => setConfirmDeleteComment(null)}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium text-gw-navy bg-gw-bg-light hover:bg-gw-bg-mid transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteComment(confirmDeleteComment)}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
