@@ -5,13 +5,15 @@ import { ThumbsUp } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 interface UpvoteButtonProps {
-  postId: string;
+  postId?: string;
+  commentId?: string;
   initialUpvotes: number;
   initialVoted: boolean;
 }
 
 export function UpvoteButton({
   postId,
+  commentId,
   initialUpvotes,
   initialVoted,
 }: UpvoteButtonProps) {
@@ -33,17 +35,16 @@ export function UpvoteButton({
 
     try {
       const supabase = createClient();
-      const { data, error } = await supabase.rpc("toggle_post_vote", {
-        p_post_id: postId,
-      });
+
+      const { data, error } = commentId
+        ? await supabase.rpc("toggle_comment_vote", { p_comment_id: commentId })
+        : await supabase.rpc("toggle_post_vote", { p_post_id: postId! });
 
       if (error) {
-        // Revert on error
         setVoted(prevVoted);
         setUpvotes(prevUpvotes);
         console.error("Vote toggle failed:", error.message);
       } else if (data) {
-        // Sync with server truth
         setVoted(data.voted);
         setUpvotes(data.upvotes);
       }

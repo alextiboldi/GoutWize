@@ -47,12 +47,14 @@ interface PostDetailClientProps {
   post: PostDetail;
   initialComments: CommentRow[];
   hasVoted: boolean;
+  votedCommentIds: string[];
 }
 
 export default function PostDetailClient({
   post,
   initialComments,
   hasVoted,
+  votedCommentIds,
 }: PostDetailClientProps) {
   const router = useRouter();
   const [comments, setComments] = useState<CommentRow[]>(initialComments);
@@ -179,6 +181,13 @@ export default function PostDetailClient({
                 </span>
                 <span>&middot;</span>
                 <span>{timeAgo(comment.created_at)}</span>
+                <span className="ml-auto">
+                  <UpvoteButton
+                    commentId={comment.id}
+                    initialUpvotes={comment.upvotes}
+                    initialVoted={votedCommentIds.includes(comment.id)}
+                  />
+                </span>
               </div>
             </div>
           ))}
