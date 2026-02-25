@@ -1,11 +1,15 @@
 import { BottomNav } from "@/components/app/bottom-nav";
 import { FlareButton } from "@/components/app/flare-button";
+import { ToastContainer } from "@/components/app/toast-container";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gw-bg-light">
       {/* Top safe area for mobile notch */}
       <div className="h-[env(safe-area-inset-top)]" />
+
+      {/* Toast notifications */}
+      <ToastContainer />
 
       {/* Scrollable content area */}
       <main className="max-w-md mx-auto px-4 pb-36 pt-4">

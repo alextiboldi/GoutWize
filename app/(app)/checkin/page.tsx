@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useToastStore } from "@/lib/toast-store";
 import {
   MOOD_OPTIONS,
   HYDRATION_OPTIONS,
@@ -69,6 +70,7 @@ export default function CheckinPage() {
         setError(upsertError.message || "Failed to save check-in.");
       } else {
         setDone(true);
+        useToastStore.getState().add("Check-in saved!");
         setTimeout(() => router.push("/feed"), 1200);
       }
     } catch {

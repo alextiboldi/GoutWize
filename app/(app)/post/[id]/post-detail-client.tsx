@@ -7,6 +7,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { POST_CATEGORIES, TRIED_IT_OPTIONS } from "@/lib/constants";
 import { timeAgo } from "@/lib/utils";
+import { useToastStore } from "@/lib/toast-store";
 import { TriedItBadge } from "@/components/app/tried-it-badge";
 import { UpvoteButton } from "@/components/app/upvote-button";
 
@@ -100,6 +101,7 @@ export default function PostDetailClient({
       const { data, error: insertError } = await supabase
         .from("comments")
         .insert({
+          id: crypto.randomUUID(),
           post_id: post.id,
           author_id: user.id,
           body: commentBody.trim(),
@@ -115,6 +117,7 @@ export default function PostDetailClient({
         setComments((prev) => [data as unknown as CommentRow, ...prev]);
         setCommentBody("");
         setTriedIt(null);
+        useToastStore.getState().add("Comment posted!");
       }
     } catch {
       setError("Something went wrong. Please try again.");

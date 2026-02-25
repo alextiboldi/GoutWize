@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useToastStore } from "@/lib/toast-store";
 import { FLARE_JOINTS } from "@/lib/constants";
 import { reliefTips } from "@/lib/seed-data";
 
@@ -44,6 +45,7 @@ export default function FlarePage() {
         console.error("Flare insert error:", insertError);
         setError(insertError.message || "Failed to log flare.");
       } else {
+        useToastStore.getState().add("Flare logged. Hang in there.");
         setLogged(true);
       }
     } catch {

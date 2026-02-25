@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { POST_CATEGORIES } from "@/lib/constants";
+import { useToastStore } from "@/lib/toast-store";
 
 const TITLE_PLACEHOLDERS: Record<string, string> = {
   general: "What's on your mind?",
@@ -56,6 +57,7 @@ export default function NewPostPage() {
         console.error("Post insert error:", insertError);
         setError(insertError.message || "Failed to create post. Please try again.");
       } else if (data) {
+        useToastStore.getState().add("Post created!");
         router.push(`/post/${data.id}`);
       }
     } catch {
