@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Share2, Check } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { POST_CATEGORIES, TRIED_IT_OPTIONS } from "@/lib/constants";
@@ -64,6 +64,31 @@ export default function PostDetailClient({
   const [triedIt, setTriedIt] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  async function handleShare() {
+    const url = `${window.location.origin}/post/${post.id}`;
+    const text =
+      post.body.length > 100
+        ? post.body.slice(0, 100) + "..."
+        : post.body;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: post.title,
+          text: `${text} — from the GoutWize community`,
+          url,
+        });
+      } catch {
+        // User cancelled share — ignore
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }
 
   async function handleSubmitComment(e: React.FormEvent) {
     e.preventDefault();
@@ -144,12 +169,25 @@ export default function PostDetailClient({
           </span>
           <span>&middot;</span>
           <span>{timeAgo(post.created_at)}</span>
-          <span className="ml-auto">
+          <span className="ml-auto flex items-center gap-3">
             <UpvoteButton
               postId={post.id}
               initialUpvotes={post.upvotes}
               initialVoted={hasVoted}
             />
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-1 text-gw-text-gray hover:text-gw-blue transition-colors"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4 text-gw-green" />
+                  <span className="text-gw-green text-xs">Copied!</span>
+                </>
+              ) : (
+                <Share2 className="w-4 h-4" />
+              )}
+            </button>
           </span>
         </div>
       </div>
