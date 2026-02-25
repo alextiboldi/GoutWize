@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Flame, Search, Sparkles } from "lucide-react";
 import type { Insight } from "@/lib/types";
 import { PostCard } from "@/components/app/post-card";
-import { POST_CATEGORIES } from "@/lib/constants";
+import { POST_CATEGORIES, FLARE_JOINTS } from "@/lib/constants";
 
 export interface PostRow {
   id: string;
@@ -18,6 +18,12 @@ export interface PostRow {
   profiles: { username: string };
 }
 
+interface UserActiveFlare {
+  id: string;
+  joint: string;
+  severity: number;
+}
+
 interface FeedClientProps {
   checkedInToday: boolean;
   activeFlareCount: number;
@@ -25,6 +31,7 @@ interface FeedClientProps {
   randomInsight: Insight;
   votedPostIds: string[];
   checkinStreak: number;
+  userActiveFlare: UserActiveFlare | null;
 }
 
 export default function FeedClient({
@@ -34,6 +41,7 @@ export default function FeedClient({
   randomInsight,
   votedPostIds,
   checkinStreak,
+  userActiveFlare,
 }: FeedClientProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"newest" | "discussed">("newest");
@@ -78,6 +86,29 @@ export default function FeedClient({
 
   return (
     <div className="space-y-4">
+      {/* User active flare banner */}
+      {userActiveFlare && (
+        <Link
+          href={`/flare/${userActiveFlare.id}`}
+          className="flex items-center gap-3 bg-gradient-to-r from-red-50 to-gw-orange/10 rounded-2xl p-4 border-l-4 border-red-400 hover:shadow-md transition-shadow"
+        >
+          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center shrink-0">
+            <Flame className="w-5 h-5 text-red-500" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm text-gw-navy">
+              You&apos;re flaring &mdash;{" "}
+              {FLARE_JOINTS.find((j) => j.value === userActiveFlare.joint)?.label ?? userActiveFlare.joint}
+              , severity {userActiveFlare.severity}
+            </p>
+            <p className="text-xs text-gw-text-gray">
+              How are you now? Update &rarr;
+            </p>
+          </div>
+          <ArrowRight className="w-4 h-4 text-gw-text-gray shrink-0" />
+        </Link>
+      )}
+
       {/* Greeting */}
       <div className="pt-2">
         <h1 className="font-heading text-2xl font-bold text-gw-navy">
