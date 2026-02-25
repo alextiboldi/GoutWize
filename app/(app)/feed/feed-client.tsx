@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowRight, Flame, Sparkles } from "lucide-react";
+import { ArrowRight, Flame, Search, Sparkles } from "lucide-react";
 import type { Insight } from "@/lib/types";
 import { PostCard } from "@/components/app/post-card";
 import { POST_CATEGORIES } from "@/lib/constants";
@@ -35,15 +35,43 @@ export default function FeedClient({
 }: FeedClientProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"newest" | "discussed">("newest");
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-  const filteredPosts = activeCategory
-    ? posts.filter((p) => p.category === activeCategory)
-    : posts;
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setSearchQuery(searchInput.trim().toLowerCase());
+    }, 300);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchInput]);
 
-  const sortedPosts = [...filteredPosts].sort((a, b) =>
-    sortBy === "discussed"
-      ? b.comment_count - a.comment_count
-      : new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  const filteredPosts = useMemo(() => {
+    let result = posts;
+    if (activeCategory) {
+      result = result.filter((p) => p.category === activeCategory);
+    }
+    if (searchQuery) {
+      result = result.filter(
+        (p) =>
+          p.title.toLowerCase().includes(searchQuery) ||
+          p.body.toLowerCase().includes(searchQuery),
+      );
+    }
+    return result;
+  }, [posts, activeCategory, searchQuery]);
+
+  const sortedPosts = useMemo(
+    () =>
+      [...filteredPosts].sort((a, b) =>
+        sortBy === "discussed"
+          ? b.comment_count - a.comment_count
+          : new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      ),
+    [filteredPosts, sortBy],
   );
 
   return (
@@ -119,6 +147,18 @@ export default function FeedClient({
         <h2 className="font-heading text-lg font-bold text-gw-navy mb-3">
           Discussions
         </h2>
+
+        {/* Search */}
+        <div className="relative mb-3">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gw-text-gray/50" />
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search discussions..."
+            className="w-full pl-9 pr-4 py-2.5 bg-white border border-gw-border rounded-xl text-sm text-gw-navy placeholder:text-gw-text-gray/40 focus:outline-none focus:border-gw-blue focus:ring-4 focus:ring-gw-blue/10 transition-all"
+          />
+        </div>
 
         {/* Category filter chips */}
         <div className="flex gap-2 overflow-x-auto pb-3 -mx-1 px-1 scrollbar-hide">
