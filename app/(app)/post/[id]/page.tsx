@@ -64,6 +64,7 @@ export default async function PostDetailPage({
       }
       hasVoted={!!voteRes.data}
       votedCommentIds={votedCommentIds}
+      isAuthenticated={!!user}
     />
   );
 }

@@ -48,6 +48,7 @@ interface PostDetailClientProps {
   initialComments: CommentRow[];
   hasVoted: boolean;
   votedCommentIds: string[];
+  isAuthenticated: boolean;
 }
 
 export default function PostDetailClient({
@@ -55,6 +56,7 @@ export default function PostDetailClient({
   initialComments,
   hasVoted,
   votedCommentIds,
+  isAuthenticated,
 }: PostDetailClientProps) {
   const router = useRouter();
   const [comments, setComments] = useState<CommentRow[]>(initialComments);
@@ -243,68 +245,85 @@ export default function PostDetailClient({
         </p>
       )}
 
-      {/* Comment form */}
-      <form
-        onSubmit={handleSubmitComment}
-        className="mt-6 bg-white rounded-2xl p-4 space-y-4"
-      >
-        {/* Tried-it selector */}
-        <div>
-          <p className="text-xs font-medium text-gw-text-gray mb-2">
-            Did you try this? (optional)
-          </p>
-          <div className="flex gap-2">
-            {TRIED_IT_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() =>
-                  setTriedIt(triedIt === option.value ? null : option.value)
-                }
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  triedIt === option.value
-                    ? "bg-gw-blue text-white"
-                    : "bg-gw-bg-light text-gw-navy hover:bg-gw-bg-mid"
-                }`}
-              >
-                {option.emoji} {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Comment textarea */}
-        <textarea
-          value={commentBody}
-          onChange={(e) => setCommentBody(e.target.value)}
-          placeholder="Share your experience..."
-          required
-          rows={3}
-          className="w-full px-4 py-3 bg-gw-bg-light border-2 border-transparent rounded-xl text-sm text-gw-navy placeholder:text-gw-text-gray/40 focus:outline-none focus:border-gw-blue focus:bg-white focus:ring-4 focus:ring-gw-blue/10 transition-all resize-none"
-        />
-
-        {error && (
-          <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">
-            {error}
-          </p>
-        )}
-
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={isSubmitting || !commentBody.trim()}
-          className="w-full bg-gw-blue text-white py-3 rounded-xl font-semibold text-sm hover:bg-gw-blue-dark transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      {/* Comment form or CTA */}
+      {isAuthenticated ? (
+        <form
+          onSubmit={handleSubmitComment}
+          className="mt-6 bg-white rounded-2xl p-4 space-y-4"
         >
-          {isSubmitting ? (
-            "Posting..."
-          ) : (
-            <>
-              <Send className="w-4 h-4" />
-              Reply
-            </>
+          {/* Tried-it selector */}
+          <div>
+            <p className="text-xs font-medium text-gw-text-gray mb-2">
+              Did you try this? (optional)
+            </p>
+            <div className="flex gap-2">
+              {TRIED_IT_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() =>
+                    setTriedIt(triedIt === option.value ? null : option.value)
+                  }
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    triedIt === option.value
+                      ? "bg-gw-blue text-white"
+                      : "bg-gw-bg-light text-gw-navy hover:bg-gw-bg-mid"
+                  }`}
+                >
+                  {option.emoji} {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Comment textarea */}
+          <textarea
+            value={commentBody}
+            onChange={(e) => setCommentBody(e.target.value)}
+            placeholder="Share your experience..."
+            required
+            rows={3}
+            className="w-full px-4 py-3 bg-gw-bg-light border-2 border-transparent rounded-xl text-sm text-gw-navy placeholder:text-gw-text-gray/40 focus:outline-none focus:border-gw-blue focus:bg-white focus:ring-4 focus:ring-gw-blue/10 transition-all resize-none"
+          />
+
+          {error && (
+            <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+              {error}
+            </p>
           )}
-        </button>
-      </form>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={isSubmitting || !commentBody.trim()}
+            className="w-full bg-gw-blue text-white py-3 rounded-xl font-semibold text-sm hover:bg-gw-blue-dark transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              "Posting..."
+            ) : (
+              <>
+                <Send className="w-4 h-4" />
+                Reply
+              </>
+            )}
+          </button>
+        </form>
+      ) : (
+        <div className="mt-6 bg-white rounded-2xl p-6 text-center">
+          <p className="font-heading text-lg font-bold text-gw-navy">
+            Join the conversation
+          </p>
+          <p className="text-sm text-gw-text-gray mt-1">
+            Sign up to share your experience &mdash; it&apos;s free.
+          </p>
+          <Link
+            href="/login"
+            className="inline-block mt-4 bg-gw-blue text-white px-8 py-3 rounded-xl font-semibold text-sm hover:bg-gw-blue-dark transition-colors"
+          >
+            Get started
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

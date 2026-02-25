@@ -42,7 +42,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Allow public routes through
-  if (PUBLIC_ROUTES.includes(pathname)) {
+  if (
+    PUBLIC_ROUTES.includes(pathname) ||
+    pathname.startsWith("/post/")
+  ) {
     return supabaseResponse;
   }
 
