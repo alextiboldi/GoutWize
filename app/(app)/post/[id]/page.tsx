@@ -1,9 +1,49 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import PostDetailClient, {
   type PostDetail,
   type CommentRow,
 } from "./post-detail-client";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id: postId } = await params;
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from("posts")
+    .select("title, body")
+    .eq("id", postId)
+    .single();
+
+  if (!data) return {};
+
+  const description =
+    data.body.length > 150
+      ? data.body.slice(0, 150) + "..."
+      : data.body;
+
+  return {
+    title: `${data.title} — GoutWize`,
+    description,
+    openGraph: {
+      title: data.title,
+      description,
+      type: "article",
+      siteName: "GoutWize",
+      images: [{ url: "/icons/foot_text_logo.png", width: 546, height: 158 }],
+    },
+    twitter: {
+      card: "summary",
+      title: data.title,
+      description,
+    },
+  };
+}
 
 export default async function PostDetailPage({
   params,
