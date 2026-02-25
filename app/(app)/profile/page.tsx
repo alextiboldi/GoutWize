@@ -13,7 +13,7 @@ export default async function ProfilePage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [profileRes, flaresRes, checkinsRes, commentsRes] = await Promise.all([
+  const [profileRes, flaresRes, checkinsRes, commentsRes, streakRes] = await Promise.all([
     supabase
       .from("profiles")
       .select("username, gout_duration, flare_frequency, approach, reason")
@@ -31,6 +31,7 @@ export default async function ProfilePage() {
       .from("comments")
       .select("id", { count: "exact", head: true })
       .eq("author_id", user.id),
+    supabase.rpc("get_checkin_streak", { p_user_id: user.id }),
   ]);
 
   if (!profileRes.data) redirect("/onboarding");
@@ -39,6 +40,7 @@ export default async function ProfilePage() {
     flares: flaresRes.count ?? 0,
     checkins: checkinsRes.count ?? 0,
     comments: commentsRes.count ?? 0,
+    currentStreak: (streakRes.data as number) ?? 0,
   };
 
   return (

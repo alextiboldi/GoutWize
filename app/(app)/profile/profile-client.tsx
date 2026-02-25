@@ -10,6 +10,7 @@ import {
   Flame,
   ClipboardCheck,
   MessageCircle,
+  Zap,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -25,6 +26,7 @@ export interface Stats {
   flares: number;
   checkins: number;
   comments: number;
+  currentStreak: number;
 }
 
 const DURATION_LABELS: Record<string, string> = {
@@ -121,16 +123,22 @@ export default function ProfileClient({
 
   const statItems = [
     {
-      icon: Flame,
-      label: "Flares logged",
-      value: stats.flares,
-      color: "text-gw-orange",
+      icon: Zap,
+      label: "Day streak",
+      value: stats.currentStreak,
+      color: "text-gw-gold",
     },
     {
       icon: ClipboardCheck,
       label: "Check-ins",
       value: stats.checkins,
       color: "text-gw-blue",
+    },
+    {
+      icon: Flame,
+      label: "Flares logged",
+      value: stats.flares,
+      color: "text-gw-orange",
     },
     {
       icon: MessageCircle,
@@ -208,7 +216,7 @@ export default function ProfileClient({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-2 gap-3 mb-4">
         {statItems.map((stat) => (
           <div
             key={stat.label}
