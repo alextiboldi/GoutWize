@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Flame, Search, Sparkles } from "lucide-react";
 import type { Insight } from "@/lib/types";
 import { PostCard } from "@/components/app/post-card";
+import { InstallPrompt } from "@/components/app/install-prompt";
 import { POST_CATEGORIES, FLARE_JOINTS } from "@/lib/constants";
 
 export interface PostRow {
@@ -115,6 +116,9 @@ export default function FeedClient({
           Your Feed
         </h1>
       </div>
+
+      {/* Install prompt */}
+      <InstallPrompt />
 
       {/* Check-in nudge or streak card */}
       {!checkedInToday ? (
