@@ -12,6 +12,7 @@ import {
   MessageCircle,
   Zap,
   Trophy,
+  Share2,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { FLARE_JOINTS } from "@/lib/constants";
@@ -93,6 +94,25 @@ export default function ProfileClient({
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(initialProfile.username);
   const [saving, setSaving] = useState(false);
+  const [inviteCopied, setInviteCopied] = useState(false);
+
+  async function handleInvite() {
+    const url = window.location.origin;
+    const text =
+      "I\u2019ve been using GoutWize \u2014 a community for people with gout. Real tips, real patterns, real support. Check it out:";
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "GoutWize", text, url });
+      } catch {
+        // User cancelled
+      }
+    } else {
+      await navigator.clipboard.writeText(`${text} ${url}`);
+      setInviteCopied(true);
+      setTimeout(() => setInviteCopied(false), 2000);
+    }
+  }
 
   async function saveUsername() {
     if (!editValue.trim() || editValue.trim() === profile.username) {
@@ -310,10 +330,28 @@ export default function ProfileClient({
         )}
       </div>
 
+      {/* Invite */}
+      <button
+        onClick={handleInvite}
+        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-gw-blue bg-white border border-gw-border hover:bg-gw-blue/5 transition-colors mt-8"
+      >
+        {inviteCopied ? (
+          <>
+            <Check className="w-4 h-4 text-gw-green" />
+            <span className="text-gw-green">Link copied!</span>
+          </>
+        ) : (
+          <>
+            <Share2 className="w-4 h-4" />
+            Invite someone
+          </>
+        )}
+      </button>
+
       {/* Sign out */}
       <button
         onClick={handleSignOut}
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-red-500 bg-white border border-gw-border hover:bg-red-50 transition-colors mt-8"
+        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-red-500 bg-white border border-gw-border hover:bg-red-50 transition-colors mt-2"
       >
         <LogOut className="w-4 h-4" />
         Sign out
