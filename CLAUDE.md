@@ -46,7 +46,8 @@ Package manager is **pnpm**. No test framework is configured yet.
 `@/*` maps to the project root (configured in `tsconfig.json`).
 
 ### Git Commits
-- always analyse the package.json version before making any changes and update the version according to the semantic versioning rules
+- Use conventional commit messages (`feat:`, `fix:`, `chore:`, etc.)
+- Do NOT manually bump `package.json` version — Release Please handles versioning automatically on merge to main
 
 
 ### General
