@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_ROUTES = ["/", "/login", "/auth/callback"];
+const PUBLIC_ROUTES = ["/", "/login", "/auth/callback", "/banned"];
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -61,9 +61,16 @@ export async function middleware(request: NextRequest) {
   if (pathname !== "/onboarding") {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("gout_duration")
+      .select("gout_duration, banned")
       .eq("id", user.id)
       .single();
+
+    // Banned users → redirect to /banned
+    if (profile?.banned && pathname !== "/banned") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/banned";
+      return NextResponse.redirect(url);
+    }
 
     if (!profile?.gout_duration) {
       const url = request.nextUrl.clone();

@@ -17,7 +17,7 @@ export default async function ProfilePage() {
   const [profileRes, flaresRes, checkinsRes, commentsRes, streakRes, flareHistoryRes] = await Promise.all([
     supabase
       .from("profiles")
-      .select("username, gout_duration, flare_frequency, approach, reason, longest_streak")
+      .select("username, gout_duration, flare_frequency, approach, reason, longest_streak, email_notifications")
       .eq("id", user.id)
       .single(),
     supabase
@@ -43,6 +43,9 @@ export default async function ProfilePage() {
 
   if (!profileRes.data) redirect("/onboarding");
 
+  const adminIds = process.env.ADMIN_USER_IDS?.split(",") ?? [];
+  const isAdmin = adminIds.includes(user.id);
+
   const stats: Stats = {
     flares: flaresRes.count ?? 0,
     checkins: checkinsRes.count ?? 0,
@@ -51,11 +54,15 @@ export default async function ProfilePage() {
     longestStreak: (profileRes.data as unknown as { longest_streak: number }).longest_streak ?? 0,
   };
 
+  const emailNotifications = (profileRes.data as unknown as { email_notifications: boolean }).email_notifications ?? true;
+
   return (
     <ProfileClient
       profile={profileRes.data as ProfileData}
       stats={stats}
       flareHistory={(flareHistoryRes.data as unknown as FlareHistoryRow[]) ?? []}
+      isAdmin={isAdmin}
+      emailNotifications={emailNotifications}
     />
   );
 }

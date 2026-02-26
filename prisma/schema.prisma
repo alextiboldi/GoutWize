@@ -18,6 +18,10 @@ model Profile {
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
 
+  banned             Boolean   @default(false)
+  emailNotifications Boolean   @default(true) @map("email_notifications")
+  lastEmailedAt      DateTime? @map("last_emailed_at")
+
   posts     Post[]
   comments  Comment[]
   votes     Vote[]
@@ -27,6 +31,7 @@ model Profile {
   pollVotes            PollVote[]
   notifications        Notification[] @relation("recipient")
   actedNotifications   Notification[] @relation("actor")
+  reports              Report[]
 
   @@map("profiles")
 }
@@ -45,6 +50,7 @@ model Post {
   author   Profile   @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments Comment[]
   votes    Vote[]
+  reports  Report[]
 
   @@map("posts")
 }
@@ -63,6 +69,7 @@ model Comment {
   poll   Poll?    @relation(fields: [pollId], references: [id], onDelete: Cascade)
   author Profile  @relation(fields: [authorId], references: [id], onDelete: Cascade)
   votes  Vote[]
+  reports Report[]
 
   @@map("comments")
 }
@@ -174,4 +181,21 @@ model Notification {
   actor Profile? @relation("actor", fields: [actorId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
+}
+
+model Report {
+  id         String   @id @default(uuid()) @db.Uuid
+  reporterId String   @map("reporter_id") @db.Uuid
+  postId     String?  @map("post_id") @db.Uuid
+  commentId  String?  @map("comment_id") @db.Uuid
+  reason     String
+  details    String?
+  status     String   @default("pending")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  reporter Profile  @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  post     Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment  Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@map("reports")
 }

@@ -15,8 +15,12 @@ import {
   Trophy,
   Share2,
   BarChart3,
+  ScrollText,
+  ShieldCheck,
+  Bell,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useToastStore } from "@/lib/toast-store";
 import { FLARE_JOINTS } from "@/lib/constants";
 import { timeAgo } from "@/lib/utils";
 
@@ -70,6 +74,8 @@ interface ProfileClientProps {
   profile: ProfileData;
   stats: Stats;
   flareHistory: FlareHistoryRow[];
+  isAdmin?: boolean;
+  emailNotifications: boolean;
 }
 
 function flareDuration(startedAt: string, resolvedAt: string | null): string {
@@ -89,6 +95,8 @@ export default function ProfileClient({
   profile: initialProfile,
   stats,
   flareHistory,
+  isAdmin,
+  emailNotifications: initialEmailNotifications,
 }: ProfileClientProps) {
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileData>(initialProfile);
@@ -98,6 +106,7 @@ export default function ProfileClient({
   const [editValue, setEditValue] = useState(initialProfile.username);
   const [saving, setSaving] = useState(false);
   const [inviteCopied, setInviteCopied] = useState(false);
+  const [emailNotifs, setEmailNotifs] = useState(initialEmailNotifications);
 
   async function handleInvite() {
     const url = window.location.origin;
@@ -114,6 +123,30 @@ export default function ProfileClient({
       await navigator.clipboard.writeText(`${text} ${url}`);
       setInviteCopied(true);
       setTimeout(() => setInviteCopied(false), 2000);
+    }
+  }
+
+  async function toggleEmailNotifications() {
+    const newValue = !emailNotifs;
+    setEmailNotifs(newValue);
+
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ email_notifications: newValue })
+      .eq("id", user.id);
+
+    if (error) {
+      setEmailNotifs(!newValue); // revert
+    } else {
+      useToastStore
+        .getState()
+        .add(`Email notifications turned ${newValue ? "on" : "off"}`);
     }
   }
 
@@ -271,6 +304,33 @@ export default function ProfileClient({
         </div>
       </div>
 
+      {/* Notifications */}
+      <div className="bg-white rounded-2xl p-5 mb-4">
+        <p className="text-xs font-medium text-gw-text-gray mb-3">
+          Notifications
+        </p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Bell className="w-4 h-4 text-gw-blue" />
+            <span className="text-sm text-gw-navy">Email notifications</span>
+          </div>
+          <button
+            onClick={toggleEmailNotifications}
+            className={`relative w-11 h-6 rounded-full transition-colors ${
+              emailNotifs ? "bg-gw-blue" : "bg-gw-bg-mid"
+            }`}
+            role="switch"
+            aria-checked={emailNotifs}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                emailNotifs ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
+        </div>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 mb-4">
         {statItems.map((stat) => (
@@ -357,6 +417,26 @@ export default function ProfileClient({
       >
         <BarChart3 className="w-4 h-4" />
         My Dashboard
+      </Link>
+
+      {/* Admin */}
+      {isAdmin && (
+        <Link
+          href="/admin/reports"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-white bg-gw-navy hover:bg-gw-navy/90 transition-colors mt-2"
+        >
+          <ShieldCheck className="w-4 h-4" />
+          Admin Reports
+        </Link>
+      )}
+
+      {/* Community Guidelines */}
+      <Link
+        href="/guidelines"
+        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-gw-navy bg-white border border-gw-border hover:bg-gw-bg-light transition-colors mt-2"
+      >
+        <ScrollText className="w-4 h-4" />
+        Community Guidelines
       </Link>
 
       {/* Invite */}

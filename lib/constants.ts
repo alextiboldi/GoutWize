@@ -53,3 +53,12 @@ export const ALCOHOL_OPTIONS = [
   { value: "light", label: "Light" },
   { value: "heavy", label: "Heavy" },
 ] as const;
+
+export const REPORT_REASONS = [
+  { value: "spam", label: "Spam" },
+  { value: "dangerous_advice", label: "Dangerous medical advice" },
+  { value: "harassment", label: "Harassment" },
+  { value: "other", label: "Other" },
+] as const;
+
+export type ReportReason = (typeof REPORT_REASONS)[number]["value"];

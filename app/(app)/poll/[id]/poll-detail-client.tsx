@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -10,10 +10,13 @@ import {
   Send,
   Share2,
   Trash2,
+  MoreHorizontal,
+  Flag,
 } from "lucide-react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
+import { REPORT_REASONS } from "@/lib/constants";
 import { timeAgo } from "@/lib/utils";
 import { useToastStore } from "@/lib/toast-store";
 import { UpvoteButton } from "@/components/app/upvote-button";
@@ -54,6 +57,146 @@ interface PollDetailClientProps {
   currentUserId: string | null;
 }
 
+function DropdownMenu({
+  isOwner,
+  onReport,
+  onDelete,
+}: {
+  isOwner: boolean;
+  onReport: () => void;
+  onDelete: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    if (open) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="text-gw-text-gray hover:text-gw-navy transition-colors"
+      >
+        <MoreHorizontal className="w-4 h-4" />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-6 bg-white rounded-xl shadow-lg border border-gw-border py-1 z-40 min-w-[140px]">
+          <button
+            onClick={() => {
+              setOpen(false);
+              onReport();
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gw-navy hover:bg-gw-bg-light transition-colors"
+          >
+            <Flag className="w-3.5 h-3.5" />
+            Report
+          </button>
+          {isOwner && (
+            <button
+              onClick={() => {
+                setOpen(false);
+                onDelete();
+              }}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Delete
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ReportModal({
+  onClose,
+  onSubmit,
+}: {
+  onClose: () => void;
+  onSubmit: (reason: string, details: string) => void;
+}) {
+  const [reason, setReason] = useState<string>(REPORT_REASONS[0].value);
+  const [details, setDetails] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit() {
+    setSubmitting(true);
+    await onSubmit(reason, details);
+    setSubmitting(false);
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+        <p className="font-semibold text-gw-navy text-center">
+          Report content
+        </p>
+        <p className="text-sm text-gw-text-gray text-center mt-1">
+          Why are you reporting this?
+        </p>
+
+        <div className="mt-4 space-y-2">
+          {REPORT_REASONS.map((r) => (
+            <label
+              key={r.value}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
+                reason === r.value
+                  ? "bg-gw-blue/10 border border-gw-blue"
+                  : "bg-gw-bg-light border border-transparent hover:bg-gw-bg-mid"
+              }`}
+            >
+              <input
+                type="radio"
+                name="reason"
+                value={r.value}
+                checked={reason === r.value}
+                onChange={() => setReason(r.value)}
+                className="accent-gw-blue"
+              />
+              <span className="text-sm text-gw-navy">{r.label}</span>
+            </label>
+          ))}
+        </div>
+
+        {reason === "other" && (
+          <textarea
+            value={details}
+            onChange={(e) => setDetails(e.target.value)}
+            placeholder="Please describe the issue..."
+            rows={3}
+            className="w-full mt-3 px-4 py-3 bg-gw-bg-light border-2 border-transparent rounded-xl text-sm text-gw-navy placeholder:text-gw-text-gray/40 focus:outline-none focus:border-gw-blue focus:bg-white focus:ring-4 focus:ring-gw-blue/10 transition-all resize-none"
+          />
+        )}
+
+        <div className="flex gap-3 mt-5">
+          <button
+            onClick={onClose}
+            className="flex-1 py-2.5 rounded-xl text-sm font-medium text-gw-navy bg-gw-bg-light hover:bg-gw-bg-mid transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-50"
+          >
+            {submitting ? "Sending..." : "Report"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PollDetailClient({
   poll,
   initialComments,
@@ -74,6 +217,7 @@ export default function PollDetailClient({
   const [confirmDeleteComment, setConfirmDeleteComment] = useState<
     string | null
   >(null);
+  const [reportTarget, setReportTarget] = useState<{ type: "post"; id: string } | { type: "comment"; id: string } | null>(null);
 
   const totalVotes = options.reduce((sum, o) => sum + o.vote_count, 0);
   const hasVoted = votedOptionId !== null;
@@ -134,6 +278,25 @@ export default function PollDetailClient({
     setConfirmDeleteComment(null);
   }
 
+  async function handleReport(reason: string, details: string) {
+    if (!reportTarget) return;
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from("reports").insert({
+      id: crypto.randomUUID(),
+      reporter_id: user.id,
+      post_id: reportTarget.type === "post" ? reportTarget.id : null,
+      comment_id: reportTarget.type === "comment" ? reportTarget.id : null,
+      reason,
+      details: details || null,
+    });
+
+    setReportTarget(null);
+    useToastStore.getState().add("Thanks for reporting");
+  }
+
   async function handleShare() {
     const url = `${window.location.origin}/poll/${poll.id}`;
 
@@ -192,6 +355,13 @@ export default function PollDetailClient({
         setComments((prev) => [data as unknown as PollCommentRow, ...prev]);
         setCommentBody("");
         useToastStore.getState().add("Comment posted!");
+
+        // Fire-and-forget email notification to poll author
+        fetch("/api/email/comment-notification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pollId: poll.id }),
+        }).catch(() => {});
       }
     } catch {
       setError("Something went wrong. Please try again.");
@@ -322,13 +492,12 @@ export default function PollDetailClient({
                 <Share2 className="w-4 h-4" />
               )}
             </button>
-            {currentUserId === poll.author_id && (
-              <button
-                onClick={() => setConfirmDeletePoll(true)}
-                className="text-gw-text-gray hover:text-red-500 transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+            {isAuthenticated && (
+              <DropdownMenu
+                isOwner={currentUserId === poll.author_id}
+                onReport={() => setReportTarget({ type: "post", id: poll.id })}
+                onDelete={() => setConfirmDeletePoll(true)}
+              />
             )}
           </span>
         </div>
@@ -364,13 +533,12 @@ export default function PollDetailClient({
                     initialUpvotes={comment.upvotes}
                     initialVoted={false}
                   />
-                  {currentUserId === comment.author_id && (
-                    <button
-                      onClick={() => setConfirmDeleteComment(comment.id)}
-                      className="text-gw-text-gray hover:text-red-500 transition-colors"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                  {isAuthenticated && (
+                    <DropdownMenu
+                      isOwner={currentUserId === comment.author_id}
+                      onReport={() => setReportTarget({ type: "comment", id: comment.id })}
+                      onDelete={() => setConfirmDeleteComment(comment.id)}
+                    />
                   )}
                 </span>
               </div>
@@ -494,6 +662,14 @@ export default function PollDetailClient({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Report modal */}
+      {reportTarget && (
+        <ReportModal
+          onClose={() => setReportTarget(null)}
+          onSubmit={handleReport}
+        />
       )}
     </div>
   );

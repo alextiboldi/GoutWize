@@ -109,6 +109,11 @@ export default function FlarePage() {
           ))}
         </div>
 
+        {/* Medical disclaimer */}
+        <p className="mt-4 text-xs text-gw-text-gray/70 bg-amber-50 px-3 py-2 rounded-lg">
+          These tips are from community members sharing personal experiences. They are not medical advice. Always consult your doctor before trying new treatments or changing your medication.
+        </p>
+
         {/* CTA to vent */}
         <Link
           href="/post/new?category=just_venting"
