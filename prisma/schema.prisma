@@ -18,11 +18,13 @@ model Profile {
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
 
-  posts    Post[]
-  comments Comment[]
-  votes    Vote[]
-  checkins Checkin[]
-  flares   Flare[]
+  posts     Post[]
+  comments  Comment[]
+  votes     Vote[]
+  checkins  Checkin[]
+  flares    Flare[]
+  polls     Poll[]
+  pollVotes PollVote[]
 
   @@map("profiles")
 }
@@ -47,15 +49,17 @@ model Post {
 
 model Comment {
   id       String  @id @default(uuid()) @db.Uuid
-  postId   String  @map("post_id") @db.Uuid
+  postId   String? @map("post_id") @db.Uuid
+  pollId   String? @map("poll_id") @db.Uuid
   authorId String  @map("author_id") @db.Uuid
   body     String
   triedIt  String? @map("tried_it")
   upvotes  Int     @default(0)
   createdAt DateTime @default(now()) @map("created_at")
 
-  post   Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  author Profile @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post   Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  poll   Poll?    @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  author Profile  @relation(fields: [authorId], references: [id], onDelete: Cascade)
   votes  Vote[]
 
   @@map("comments")
@@ -108,4 +112,48 @@ model Flare {
   user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("flares")
+}
+
+model Poll {
+  id           String   @id @default(uuid()) @db.Uuid
+  authorId     String   @map("author_id") @db.Uuid
+  question     String
+  closed       Boolean  @default(false)
+  commentCount Int      @default(0) @map("comment_count")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  author   Profile      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  options  PollOption[]
+  votes    PollVote[]
+  comments Comment[]
+
+  @@map("polls")
+}
+
+model PollOption {
+  id           String @id @default(uuid()) @db.Uuid
+  pollId       String @map("poll_id") @db.Uuid
+  label        String
+  voteCount    Int    @default(0) @map("vote_count")
+  displayOrder Int    @map("display_order")
+
+  poll  Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes PollVote[]
+
+  @@map("poll_options")
+}
+
+model PollVote {
+  id        String   @id @default(uuid()) @db.Uuid
+  pollId    String   @map("poll_id") @db.Uuid
+  optionId  String   @map("option_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  poll   Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  user   Profile    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, userId])
+  @@map("poll_votes")
 }

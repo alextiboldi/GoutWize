@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { seedInsights } from "@/lib/seed-data";
-import FeedClient, { type PostRow } from "./feed-client";
+import FeedClient, { type PostRow, type PollRow } from "./feed-client";
 
 function pickRandomInsight() {
   return seedInsights[Math.floor(Math.random() * seedInsights.length)];
@@ -17,7 +17,7 @@ export default async function FeedPage() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const [checkinRes, flareRes, postsRes, votesRes, streakRes, userFlareRes] = await Promise.all([
+  const [checkinRes, flareRes, postsRes, votesRes, streakRes, userFlareRes, pollsRes, pollVotesRes] = await Promise.all([
     supabase
       .from("checkins")
       .select("id")
@@ -49,10 +49,26 @@ export default async function FeedPage() {
       .order("started_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
+    supabase
+      .from("polls")
+      .select(
+        "id, question, comment_count, created_at, author_id, profiles(username), poll_options(id, label, vote_count, display_order)",
+      )
+      .order("created_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("poll_votes")
+      .select("poll_id, option_id")
+      .eq("user_id", user.id),
   ]);
 
   const randomInsight = pickRandomInsight();
   const votedPostIds = (votesRes.data ?? []).map((v) => v.post_id as string);
+
+  const userPollVotes = (pollVotesRes.data ?? []) as Array<{
+    poll_id: string;
+    option_id: string;
+  }>;
 
   const userActiveFlare = userFlareRes.data as
     | { id: string; joint: string; severity: number }
@@ -63,8 +79,10 @@ export default async function FeedPage() {
       checkedInToday={!!checkinRes.data}
       activeFlareCount={flareRes.count ?? 0}
       posts={(postsRes.data as unknown as PostRow[]) ?? []}
+      polls={(pollsRes.data as unknown as PollRow[]) ?? []}
       randomInsight={randomInsight}
       votedPostIds={votedPostIds}
+      userPollVotes={userPollVotes}
       checkinStreak={(streakRes.data as number) ?? 0}
       userActiveFlare={userActiveFlare}
     />

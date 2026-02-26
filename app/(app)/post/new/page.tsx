@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Send } from "lucide-react";
+import Link from "next/link";
+import { BarChart3, Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { POST_CATEGORIES } from "@/lib/constants";
 import { useToastStore } from "@/lib/toast-store";
@@ -69,9 +70,16 @@ export default function NewPostPage() {
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-bold text-gw-navy pt-2 mb-6">
+      <h1 className="font-heading text-2xl font-bold text-gw-navy pt-2 mb-2">
         New Post
       </h1>
+      <Link
+        href="/poll/new"
+        className="inline-flex items-center gap-1.5 text-sm text-gw-blue hover:text-gw-blue-dark transition-colors mb-6"
+      >
+        <BarChart3 className="w-3.5 h-3.5" />
+        Or create a poll
+      </Link>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Category picker */}

@@ -5,6 +5,9 @@ export type {
   Vote,
   Checkin,
   Flare,
+  Poll,
+  PollOption,
+  PollVote,
 } from "../prisma/generated/prisma/client";
 
 export interface Insight {

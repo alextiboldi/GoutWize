@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Flame, Search, Sparkles } from "lucide-react";
 import type { Insight } from "@/lib/types";
 import { PostCard } from "@/components/app/post-card";
+import { PollCard, type PollOptionRow } from "@/components/app/poll-card";
 import { InstallPrompt } from "@/components/app/install-prompt";
 import { POST_CATEGORIES, FLARE_JOINTS } from "@/lib/constants";
 
@@ -19,6 +20,25 @@ export interface PostRow {
   profiles: { username: string };
 }
 
+export interface PollRow {
+  id: string;
+  question: string;
+  comment_count: number;
+  created_at: string;
+  author_id: string;
+  profiles: { username: string };
+  poll_options: PollOptionRow[];
+}
+
+export interface PollVoteRow {
+  poll_id: string;
+  option_id: string;
+}
+
+type FeedItem =
+  | { type: "post"; data: PostRow }
+  | { type: "poll"; data: PollRow };
+
 interface UserActiveFlare {
   id: string;
   joint: string;
@@ -29,8 +49,10 @@ interface FeedClientProps {
   checkedInToday: boolean;
   activeFlareCount: number;
   posts: PostRow[];
+  polls: PollRow[];
   randomInsight: Insight;
   votedPostIds: string[];
+  userPollVotes: PollVoteRow[];
   checkinStreak: number;
   userActiveFlare: UserActiveFlare | null;
 }
@@ -39,8 +61,10 @@ export default function FeedClient({
   checkedInToday,
   activeFlareCount,
   posts,
+  polls,
   randomInsight,
   votedPostIds,
+  userPollVotes,
   checkinStreak,
   userActiveFlare,
 }: FeedClientProps) {
@@ -60,30 +84,50 @@ export default function FeedClient({
     };
   }, [searchInput]);
 
-  const filteredPosts = useMemo(() => {
-    let result = posts;
+  const feedItems = useMemo(() => {
+    // Build merged feed items
+    let items: FeedItem[] = [
+      ...posts.map((p) => ({ type: "post" as const, data: p })),
+      ...polls.map((p) => ({ type: "poll" as const, data: p })),
+    ];
+
+    // Category filter: hide polls when category is active (polls have no category)
     if (activeCategory) {
-      result = result.filter((p) => p.category === activeCategory);
-    }
-    if (searchQuery) {
-      result = result.filter(
-        (p) =>
-          p.title.toLowerCase().includes(searchQuery) ||
-          p.body.toLowerCase().includes(searchQuery),
+      items = items.filter(
+        (item) =>
+          item.type === "post" && item.data.category === activeCategory,
       );
     }
-    return result;
-  }, [posts, activeCategory, searchQuery]);
 
-  const sortedPosts = useMemo(
-    () =>
-      [...filteredPosts].sort((a, b) =>
-        sortBy === "discussed"
-          ? b.comment_count - a.comment_count
-          : new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-      ),
-    [filteredPosts, sortBy],
-  );
+    // Search filter: match post title/body or poll question
+    if (searchQuery) {
+      items = items.filter((item) => {
+        if (item.type === "post") {
+          return (
+            item.data.title.toLowerCase().includes(searchQuery) ||
+            item.data.body.toLowerCase().includes(searchQuery)
+          );
+        }
+        return item.data.question.toLowerCase().includes(searchQuery);
+      });
+    }
+
+    // Sort
+    items.sort((a, b) => {
+      if (sortBy === "discussed") {
+        return (
+          ("comment_count" in b.data ? b.data.comment_count : 0) -
+          ("comment_count" in a.data ? a.data.comment_count : 0)
+        );
+      }
+      return (
+        new Date(b.data.created_at).getTime() -
+        new Date(a.data.created_at).getTime()
+      );
+    });
+
+    return items;
+  }, [posts, polls, activeCategory, searchQuery, sortBy]);
 
   return (
     <div className="space-y-4">
@@ -274,22 +318,38 @@ export default function FeedClient({
           </button>
         </div>
 
-        {sortedPosts.length > 0 ? (
+        {feedItems.length > 0 ? (
           <div className="space-y-3">
-            {sortedPosts.map((post) => (
-              <PostCard
-                key={post.id}
-                id={post.id}
-                title={post.title}
-                body={post.body}
-                category={post.category}
-                authorUsername={post.profiles?.username ?? "Anonymous"}
-                createdAt={post.created_at}
-                commentCount={post.comment_count}
-                upvotes={post.upvotes}
-                hasVoted={votedPostIds.includes(post.id)}
-              />
-            ))}
+            {feedItems.map((item) =>
+              item.type === "post" ? (
+                <PostCard
+                  key={`post-${item.data.id}`}
+                  id={item.data.id}
+                  title={item.data.title}
+                  body={item.data.body}
+                  category={item.data.category}
+                  authorUsername={item.data.profiles?.username ?? "Anonymous"}
+                  createdAt={item.data.created_at}
+                  commentCount={item.data.comment_count}
+                  upvotes={item.data.upvotes}
+                  hasVoted={votedPostIds.includes(item.data.id)}
+                />
+              ) : (
+                <PollCard
+                  key={`poll-${item.data.id}`}
+                  id={item.data.id}
+                  question={item.data.question}
+                  authorUsername={item.data.profiles?.username ?? "Anonymous"}
+                  createdAt={item.data.created_at}
+                  commentCount={item.data.comment_count}
+                  options={item.data.poll_options ?? []}
+                  votedOptionId={
+                    userPollVotes.find((v) => v.poll_id === item.data.id)
+                      ?.option_id ?? null
+                  }
+                />
+              ),
+            )}
           </div>
         ) : activeCategory ? (
           <div className="bg-white rounded-2xl p-8 text-center">

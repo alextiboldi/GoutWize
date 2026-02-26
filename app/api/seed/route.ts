@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { seedPosts } from "@/lib/seed-posts";
+import { seedPolls } from "@/lib/seed-polls";
 
 export { seed as GET, seed as POST };
 
@@ -28,7 +29,7 @@ async function seed() {
     );
   }
 
-  const results = { posts: 0, comments: 0, errors: [] as string[] };
+  const results = { posts: 0, comments: 0, polls: 0, errors: [] as string[] };
 
   for (const seedPost of seedPosts) {
     // Insert post
@@ -74,8 +75,45 @@ async function seed() {
     }
   }
 
+  // Seed polls
+  for (const seedPoll of seedPolls) {
+    const { data: poll, error: pollError } = await supabase
+      .from("polls")
+      .insert({
+        author_id: user.id,
+        question: seedPoll.question,
+      })
+      .select("id")
+      .single();
+
+    if (pollError) {
+      results.errors.push(
+        `Poll "${seedPoll.question}": ${pollError.message}`,
+      );
+      continue;
+    }
+
+    const optionRows = seedPoll.options.map((label, i) => ({
+      poll_id: poll.id,
+      label,
+      display_order: i,
+    }));
+
+    const { error: optionsError } = await supabase
+      .from("poll_options")
+      .insert(optionRows);
+
+    if (optionsError) {
+      results.errors.push(
+        `Poll options for "${seedPoll.question}": ${optionsError.message}`,
+      );
+    } else {
+      results.polls++;
+    }
+  }
+
   return NextResponse.json({
-    message: `Seeded ${results.posts} posts and ${results.comments} comments`,
+    message: `Seeded ${results.posts} posts, ${results.comments} comments, and ${results.polls} polls`,
     ...results,
   });
 }
