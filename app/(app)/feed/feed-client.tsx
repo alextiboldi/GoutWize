@@ -35,6 +35,12 @@ export interface PollVoteRow {
   option_id: string;
 }
 
+export interface TriedItCounts {
+  worked: number;
+  didnt_work: number;
+  mixed: number;
+}
+
 type FeedItem =
   | { type: "post"; data: PostRow }
   | { type: "poll"; data: PollRow };
@@ -53,6 +59,7 @@ interface FeedClientProps {
   randomInsight: Insight;
   votedPostIds: string[];
   userPollVotes: PollVoteRow[];
+  triedItByPost: Record<string, TriedItCounts>;
   checkinStreak: number;
   userActiveFlare: UserActiveFlare | null;
 }
@@ -65,6 +72,7 @@ export default function FeedClient({
   randomInsight,
   votedPostIds,
   userPollVotes,
+  triedItByPost,
   checkinStreak,
   userActiveFlare,
 }: FeedClientProps) {
@@ -354,6 +362,7 @@ export default function FeedClient({
                   commentCount={item.data.comment_count}
                   upvotes={item.data.upvotes}
                   hasVoted={votedPostIds.includes(item.data.id)}
+                  triedItCounts={triedItByPost[item.data.id]}
                 />
               ) : (
                 <PollCard

@@ -5,6 +5,13 @@ import { MessageCircle } from "lucide-react";
 import { POST_CATEGORIES } from "@/lib/constants";
 import { timeAgo } from "@/lib/utils";
 import { UpvoteButton } from "@/components/app/upvote-button";
+import { TriedItSummary } from "@/components/app/tried-it-summary";
+
+interface TriedItCounts {
+  worked: number;
+  didnt_work: number;
+  mixed: number;
+}
 
 interface PostCardProps {
   id: string;
@@ -16,6 +23,7 @@ interface PostCardProps {
   commentCount: number;
   upvotes: number;
   hasVoted: boolean;
+  triedItCounts?: TriedItCounts;
 }
 
 export function PostCard({
@@ -28,6 +36,7 @@ export function PostCard({
   commentCount,
   upvotes,
   hasVoted,
+  triedItCounts,
 }: PostCardProps) {
   const router = useRouter();
   const cat = POST_CATEGORIES.find((c) => c.value === category);
@@ -60,6 +69,10 @@ export function PostCard({
       <p className="mt-1 text-sm text-gw-text-gray leading-relaxed">
         {truncatedBody}
       </p>
+
+      {triedItCounts && (
+        <TriedItSummary counts={triedItCounts} variant="mini" />
+      )}
 
       <div className="mt-3 flex items-center gap-3 text-xs text-gw-text-gray">
         <span className="font-medium">{authorUsername}</span>

@@ -9,6 +9,10 @@ import { POST_CATEGORIES, TRIED_IT_OPTIONS } from "@/lib/constants";
 import { timeAgo } from "@/lib/utils";
 import { useToastStore } from "@/lib/toast-store";
 import { TriedItBadge } from "@/components/app/tried-it-badge";
+import {
+  TriedItSummary,
+  computeTriedItCounts,
+} from "@/components/app/tried-it-summary";
 import { UpvoteButton } from "@/components/app/upvote-button";
 
 export interface PostDetail {
@@ -220,6 +224,11 @@ export default function PostDetailClient({
       {/* Divider */}
       <div className="my-4 border-t border-gw-border" />
 
+      {/* Tried-it summary */}
+      <TriedItSummary
+        counts={computeTriedItCounts(comments.map((c) => c.tried_it))}
+      />
+
       {/* Comments header */}
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-semibold text-sm text-gw-navy">
@@ -288,6 +297,11 @@ export default function PostDetailClient({
         >
           {/* Tried-it selector */}
           <div>
+            {(post.category === "has_anyone_tried" || post.category === "tip") && (
+              <p className="text-xs text-gw-blue bg-gw-blue/5 px-3 py-2 rounded-lg mb-2">
+                Have you tried this? Your experience helps the community.
+              </p>
+            )}
             <p className="text-xs font-medium text-gw-text-gray mb-2">
               Did you try this? (optional)
             </p>

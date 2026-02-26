@@ -17,7 +17,7 @@ export default async function FeedPage() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const [checkinRes, flareRes, postsRes, votesRes, streakRes, userFlareRes, pollsRes, pollVotesRes] = await Promise.all([
+  const [checkinRes, flareRes, postsRes, votesRes, streakRes, userFlareRes, pollsRes, pollVotesRes, triedItRes] = await Promise.all([
     supabase
       .from("checkins")
       .select("id")
@@ -60,6 +60,11 @@ export default async function FeedPage() {
       .from("poll_votes")
       .select("poll_id, option_id")
       .eq("user_id", user.id),
+    supabase
+      .from("comments")
+      .select("post_id, tried_it")
+      .not("tried_it", "is", null)
+      .not("post_id", "is", null),
   ]);
 
   const randomInsight = pickRandomInsight();
@@ -74,6 +79,18 @@ export default async function FeedPage() {
     | { id: string; joint: string; severity: number }
     | null;
 
+  // Aggregate tried-it counts per post
+  const triedItByPost: Record<string, { worked: number; didnt_work: number; mixed: number }> = {};
+  for (const row of (triedItRes.data ?? []) as Array<{ post_id: string; tried_it: string }>) {
+    if (!triedItByPost[row.post_id]) {
+      triedItByPost[row.post_id] = { worked: 0, didnt_work: 0, mixed: 0 };
+    }
+    const counts = triedItByPost[row.post_id];
+    if (row.tried_it === "worked") counts.worked++;
+    else if (row.tried_it === "didnt_work") counts.didnt_work++;
+    else if (row.tried_it === "mixed") counts.mixed++;
+  }
+
   return (
     <FeedClient
       checkedInToday={!!checkinRes.data}
@@ -83,6 +100,7 @@ export default async function FeedPage() {
       randomInsight={randomInsight}
       votedPostIds={votedPostIds}
       userPollVotes={userPollVotes}
+      triedItByPost={triedItByPost}
       checkinStreak={(streakRes.data as number) ?? 0}
       userActiveFlare={userActiveFlare}
     />
