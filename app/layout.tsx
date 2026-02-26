@@ -50,12 +50,14 @@ export const metadata: Metadata = {
       "A community of real people sharing what actually works for gout. Track flares, log daily check-ins, discover patterns, and get support from others who truly understand.",
     type: "website",
     siteName: "GoutWize",
+    images: [{ url: "/icons/foot_logo.png", width: 512, height: 512, alt: "GoutWize logo" }],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "GoutWize — You're not alone with gout",
     description:
       "A community of real people sharing what actually works for gout. Track flares, log daily check-ins, discover patterns, and get support.",
+    images: ["/icons/foot_logo.png"],
   },
 };
 
