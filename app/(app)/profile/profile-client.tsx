@@ -14,6 +14,7 @@ import {
   Zap,
   Trophy,
   Share2,
+  BarChart3,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { FLARE_JOINTS } from "@/lib/constants";
@@ -349,10 +350,19 @@ export default function ProfileClient({
         )}
       </div>
 
+      {/* Dashboard link */}
+      <Link
+        href="/dashboard"
+        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-white bg-gw-blue hover:bg-gw-blue-dark transition-colors mt-8"
+      >
+        <BarChart3 className="w-4 h-4" />
+        My Dashboard
+      </Link>
+
       {/* Invite */}
       <button
         onClick={handleInvite}
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-gw-blue bg-white border border-gw-border hover:bg-gw-blue/5 transition-colors mt-8"
+        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-gw-blue bg-white border border-gw-border hover:bg-gw-blue/5 transition-colors mt-2"
       >
         {inviteCopied ? (
           <>

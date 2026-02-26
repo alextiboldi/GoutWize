@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowRight, Flame, Search, Sparkles } from "lucide-react";
+import { ArrowRight, BarChart3, Flame, Search, Sparkles } from "lucide-react";
 import type { Insight } from "@/lib/types";
 import { PostCard } from "@/components/app/post-card";
 import { PollCard, type PollOptionRow } from "@/components/app/poll-card";
@@ -201,6 +201,27 @@ export default function FeedClient({
             </p>
           </div>
         </div>
+      )}
+
+      {/* Dashboard card */}
+      {checkinStreak >= 3 && (
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-3 bg-white rounded-2xl p-4 border-l-4 border-gw-green hover:shadow-md transition-shadow"
+        >
+          <div className="w-10 h-10 bg-gw-green/10 rounded-full flex items-center justify-center shrink-0">
+            <BarChart3 className="w-5 h-5 text-gw-green" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm text-gw-navy">
+              Your Dashboard
+            </p>
+            <p className="text-xs text-gw-text-gray">
+              {checkinStreak}-day streak &middot; See your patterns
+            </p>
+          </div>
+          <ArrowRight className="w-4 h-4 text-gw-text-gray shrink-0" />
+        </Link>
       )}
 
       {/* Insight card */}
