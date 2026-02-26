@@ -80,6 +80,7 @@ async function seed() {
     const { data: poll, error: pollError } = await supabase
       .from("polls")
       .insert({
+        id: crypto.randomUUID(),
         author_id: user.id,
         question: seedPoll.question,
       })
@@ -94,6 +95,7 @@ async function seed() {
     }
 
     const optionRows = seedPoll.options.map((label, i) => ({
+      id: crypto.randomUUID(),
       poll_id: poll.id,
       label,
       display_order: i,

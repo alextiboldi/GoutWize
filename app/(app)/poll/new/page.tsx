@@ -60,6 +60,7 @@ export default function NewPollPage() {
       const { data: poll, error: pollError } = await supabase
         .from("polls")
         .insert({
+          id: crypto.randomUUID(),
           author_id: user.id,
           question: question.trim(),
         })
@@ -73,6 +74,7 @@ export default function NewPollPage() {
 
       // Insert options
       const optionRows = filledOptions.map((label, i) => ({
+        id: crypto.randomUUID(),
         poll_id: poll.id,
         label: label.trim(),
         display_order: i,
