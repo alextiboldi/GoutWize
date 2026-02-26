@@ -173,7 +173,14 @@ export default function Home() {
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center gap-2">
+              <Image
+                src="/icons/foot_logo.png"
+                alt="GoutWize logo"
+                width={36}
+                height={36}
+                className="w-9 h-9"
+              />
               <span className="font-heading text-2xl font-bold text-gw-navy">
                 Gout<span className="text-gw-blue">Wize</span>
               </span>
