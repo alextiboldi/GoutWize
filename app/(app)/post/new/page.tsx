@@ -61,7 +61,7 @@ export default function NewPostPage() {
         setError(insertError.message || "Failed to create post. Please try again.");
       } else if (data) {
         useToastStore.getState().add("Post created!");
-        router.push(`/post/${data.id}`);
+        router.push("/feed");
       }
     } catch {
       setError("Something went wrong. Please try again.");
