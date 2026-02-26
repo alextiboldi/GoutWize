@@ -46,6 +46,7 @@ export default function NewPostPage() {
       const { data, error: insertError } = await supabase
         .from("posts")
         .insert({
+          id: crypto.randomUUID(),
           author_id: user.id,
           title: title.trim(),
           body: body.trim(),

@@ -36,6 +36,7 @@ async function seed() {
     const { data: post, error: postError } = await supabase
       .from("posts")
       .insert({
+        id: crypto.randomUUID(),
         author_id: user.id,
         title: seedPost.title,
         body: seedPost.body,
@@ -58,6 +59,7 @@ async function seed() {
       const { error: commentError } = await supabase
         .from("comments")
         .insert({
+          id: crypto.randomUUID(),
           post_id: post.id,
           author_id: user.id,
           body: seedComment.body,

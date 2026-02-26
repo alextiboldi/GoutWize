@@ -35,6 +35,7 @@ export default function FlarePage() {
       }
 
       const { error: insertError } = await supabase.from("flares").insert({
+        id: crypto.randomUUID(),
         user_id: user.id,
         joint,
         severity,
