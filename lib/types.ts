@@ -8,6 +8,7 @@ export type {
   Poll,
   PollOption,
   PollVote,
+  Notification,
 } from "../prisma/generated/prisma/client";
 
 export interface Insight {
