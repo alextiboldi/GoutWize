@@ -51,6 +51,7 @@ export default function NewPostPage() {
           title: title.trim(),
           body: body.trim(),
           category,
+          updated_at: new Date().toISOString(),
         })
         .select("id")
         .single();

@@ -43,6 +43,7 @@ async function seed() {
         category: seedPost.category,
         upvotes: seedPost.upvotes,
         comment_count: seedPost.comments.length,
+        updated_at: new Date().toISOString(),
       })
       .select("id")
       .single();
