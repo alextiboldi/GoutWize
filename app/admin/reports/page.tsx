@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import AdminReportsClient, { type ReportRow } from "./admin-client";
 
@@ -82,6 +84,13 @@ export default async function AdminReportsPage() {
   return (
     <div className="min-h-screen bg-gw-bg-light">
       <div className="max-w-2xl mx-auto px-4 py-8">
+        <Link
+          href="/feed"
+          className="inline-flex items-center gap-1 text-sm text-gw-orange font-medium mb-4"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Feed
+        </Link>
         <h1 className="font-heading text-2xl font-bold text-gw-navy mb-2">
           Admin &mdash; Reports
         </h1>
