@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.1](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.46.0...goutwize-v0.46.1) (2026-02-27)
+
+
+### Bug Fixes
+
+* add back navigation link to admin reports page ([d9db8e3](https://github.com/alextiboldi/GoutWize/commit/d9db8e3e6bff9862b2b946cbbd3c789e2d5adef7))
+
 ## [0.46.0](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.45.0...goutwize-v0.46.0) (2026-02-26)
 
 
