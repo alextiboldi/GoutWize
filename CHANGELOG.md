@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.47.1](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.47.0...goutwize-v0.47.1) (2026-03-02)
+
+
+### Bug Fixes
+
+* bot API middleware body stream issue ([2301edc](https://github.com/alextiboldi/GoutWize/commit/2301edca840c9606c0bef6dd0ddf05bc21bcf36e))
+* skip middleware for bot API to preserve request body ([c585a6c](https://github.com/alextiboldi/GoutWize/commit/c585a6c93124447ebcaa1983a22d3679a38e189f))
+
 ## [0.47.0](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.46.1...goutwize-v0.47.0) (2026-03-02)
 
 
