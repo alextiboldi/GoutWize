@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { MobileNav } from "@/components/landing/mobile-nav";
 import { seedInsights } from "@/lib/seed-data";
+import { createClient } from "@/lib/supabase/server";
+import { formatCount } from "@/lib/format-count";
 
 const NAV_LINKS = [
   { href: "#how-it-works", label: "How It Works" },
@@ -117,33 +119,35 @@ const FEATURES = [
   },
 ];
 
-const STATS = [
-  {
-    value: "10K+",
-    label: "Active Members",
-    bg: "bg-gw-bg-light",
-    textColor: "text-gw-blue",
-  },
-  {
-    value: "5K+",
-    label: "Success Stories",
-    bg: "bg-gw-blue",
-    textColor: "text-white",
-    labelColor: "text-white/80",
-  },
-  {
-    value: "50K+",
-    label: "Posts Shared",
-    bg: "bg-gw-orange/10",
-    textColor: "text-gw-orange",
-  },
-  {
-    value: "24/7",
-    label: "Community Support",
-    bg: "bg-gw-green/10",
-    textColor: "text-gw-green",
-  },
-];
+function buildStats(members: string) {
+  return [
+    {
+      value: members,
+      label: "Members",
+      bg: "bg-gw-bg-light",
+      textColor: "text-gw-blue",
+    },
+    {
+      value: "24/7",
+      label: "Community Support",
+      bg: "bg-gw-blue",
+      textColor: "text-white",
+      labelColor: "text-white/80",
+    },
+    {
+      value: "Free",
+      label: "Forever",
+      bg: "bg-gw-orange/10",
+      textColor: "text-gw-orange",
+    },
+    {
+      value: "100%",
+      label: "Privacy First",
+      bg: "bg-gw-green/10",
+      textColor: "text-gw-green",
+    },
+  ];
+}
 
 const FOOTER_LINKS = {
   Product: [
@@ -166,7 +170,14 @@ const FOOTER_LINKS = {
   ],
 };
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { count: memberCount } = await supabase
+    .from("profiles")
+    .select("id", { count: "exact", head: true });
+
+  const formattedMembers = formatCount(memberCount ?? 0);
+
   return (
     <div className="min-h-screen">
       {/* ===== HEADER ===== */}
@@ -220,7 +231,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
               <span className="inline-block bg-gw-blue/10 text-gw-blue px-4 py-2 rounded-full text-sm font-semibold mb-6">
-                Trusted by 10,000+ Gout Sufferers
+                Trusted by {formattedMembers} Gout Warriors
               </span>
               <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-gw-navy leading-tight mb-6">
                 Stop Guessing. Start{" "}
@@ -269,8 +280,8 @@ export default function Home() {
                     <Heart className="w-5 h-5 text-gw-green" />
                   </div>
                   <div>
-                    <p className="text-sm text-gw-text-gray">Active Members</p>
-                    <p className="font-bold text-gw-navy">10,247 Online Now</p>
+                    <p className="text-sm text-gw-text-gray">Members</p>
+                    <p className="font-bold text-gw-navy">{formattedMembers} and growing</p>
                   </div>
                 </div>
               </div>
@@ -399,12 +410,12 @@ export default function Home() {
               <div className="absolute -bottom-8 -right-4 sm:-right-8 bg-white rounded-xl shadow-2xl p-6 hidden sm:block">
                 <div className="grid grid-cols-2 gap-6 text-center">
                   <div>
-                    <p className="text-3xl font-bold text-gw-blue">10K+</p>
+                    <p className="text-3xl font-bold text-gw-blue">{formattedMembers}</p>
                     <p className="text-sm text-gw-text-gray">Members</p>
                   </div>
                   <div>
-                    <p className="text-3xl font-bold text-gw-green">500+</p>
-                    <p className="text-sm text-gw-text-gray">Tips Shared</p>
+                    <p className="text-3xl font-bold text-gw-green">24/7</p>
+                    <p className="text-sm text-gw-text-gray">Support</p>
                   </div>
                 </div>
               </div>
@@ -542,7 +553,7 @@ export default function Home() {
             <div className="relative">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  {STATS.slice(0, 2).map((stat) => (
+                  {buildStats(formattedMembers).slice(0, 2).map((stat) => (
                     <div
                       key={stat.label}
                       className={`${stat.bg} rounded-2xl p-6 text-center`}
@@ -561,7 +572,7 @@ export default function Home() {
                   ))}
                 </div>
                 <div className="space-y-4 pt-8">
-                  {STATS.slice(2).map((stat) => (
+                  {buildStats(formattedMembers).slice(2).map((stat) => (
                     <div
                       key={stat.label}
                       className={`${stat.bg} rounded-2xl p-6 text-center`}
@@ -597,7 +608,7 @@ export default function Home() {
             Ready to Take Control of Your Gout?
           </h2>
           <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of others who are discovering what actually works.
+            Join others who are discovering what actually works.
             Your solution might be just one conversation away.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -615,8 +626,8 @@ export default function Home() {
             </a>
           </div>
           <p className="mt-6 text-sm text-white/70">
-            <Star className="inline w-4 h-4 text-gw-gold mr-1" /> 4.9/5 stars
-            from 2,000+ reviews &bull; Free forever plan available
+            <Star className="inline w-4 h-4 text-gw-gold mr-1" /> Free forever
+            &bull; No credit card required
           </p>
         </div>
       </section>
