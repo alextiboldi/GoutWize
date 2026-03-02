@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.47.0](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.46.1...goutwize-v0.47.0) (2026-03-02)
+
+
+### Features
+
+* add markdown rendering to posts and comments ([0f219ce](https://github.com/alextiboldi/GoutWize/commit/0f219ce8023cf55354763a5380b75aaaf242103b))
+* add public bot API for automated posts ([691237d](https://github.com/alextiboldi/GoutWize/commit/691237d0121e952ebab51097e53b1b1a7e58112f))
+* generate creative usernames for new users ([fc502aa](https://github.com/alextiboldi/GoutWize/commit/fc502aa3f8e53bb75c11f67771cfe80afd003800))
+* markdown rendering, live stats, bot API ([69c948a](https://github.com/alextiboldi/GoutWize/commit/69c948a7515e430ad968935cd94208ae6f8975ae))
+* replace fake insight/pattern count with honest wording (Story 13.4) ([32ff63f](https://github.com/alextiboldi/GoutWize/commit/32ff63f518ebeebcc8a73046c33ee8ac1eb9b8e6))
+* replace hardcoded member counts with live data (Story 13.1) ([776ccba](https://github.com/alextiboldi/GoutWize/commit/776ccbae5834d6c259b4aecf7b11172fbdc9a641))
+* route auth emails through Resend via Supabase Auth Hook ([a6b25e9](https://github.com/alextiboldi/GoutWize/commit/a6b25e9b9823d94a7a1c18326ab85e9912d4c2a7))
+* show live discussion and comment counts on landing page (Story 13.2) ([2358ee6](https://github.com/alextiboldi/GoutWize/commit/2358ee6a01b390772e0434d805ec8842fd0f7300))
+
 ## [0.46.1](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.46.0...goutwize-v0.46.1) (2026-02-27)
 
 
