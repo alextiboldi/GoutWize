@@ -4,6 +4,11 @@ import { NextResponse, type NextRequest } from "next/server";
 const PUBLIC_ROUTES = ["/", "/login", "/auth/callback", "/banned"];
 
 export async function middleware(request: NextRequest) {
+  // Skip middleware entirely for bot API routes to preserve the request body
+  if (request.nextUrl.pathname.startsWith("/api/bot/")) {
+    return NextResponse.next();
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
