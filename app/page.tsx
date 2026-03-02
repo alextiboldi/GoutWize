@@ -172,11 +172,15 @@ const FOOTER_LINKS = {
 
 export default async function Home() {
   const supabase = await createClient();
-  const { count: memberCount } = await supabase
-    .from("profiles")
-    .select("id", { count: "exact", head: true });
+  const [membersRes, postsRes, commentsRes] = await Promise.all([
+    supabase.from("profiles").select("id", { count: "exact", head: true }),
+    supabase.from("posts").select("id", { count: "exact", head: true }),
+    supabase.from("comments").select("id", { count: "exact", head: true }),
+  ]);
 
-  const formattedMembers = formatCount(memberCount ?? 0);
+  const formattedMembers = formatCount(membersRes.count ?? 0);
+  const formattedPosts = formatCount(postsRes.count ?? 0);
+  const formattedComments = formatCount(commentsRes.count ?? 0);
 
   return (
     <div className="min-h-screen">
@@ -316,7 +320,8 @@ export default async function Home() {
             </h2>
             <p className="text-lg text-gw-text-gray max-w-2xl mx-auto">
               Living with gout can feel isolating. But here&apos;s what
-              we&apos;ve learned from thousands of community members.
+              we&apos;ve learned from {formattedMembers} community members
+              across {formattedPosts} discussions and {formattedComments} replies.
             </p>
           </div>
 
@@ -414,8 +419,8 @@ export default async function Home() {
                     <p className="text-sm text-gw-text-gray">Members</p>
                   </div>
                   <div>
-                    <p className="text-3xl font-bold text-gw-green">24/7</p>
-                    <p className="text-sm text-gw-text-gray">Support</p>
+                    <p className="text-3xl font-bold text-gw-green">{formattedPosts}</p>
+                    <p className="text-sm text-gw-text-gray">Discussions</p>
                   </div>
                 </div>
               </div>
