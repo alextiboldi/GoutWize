@@ -74,7 +74,7 @@ const STEPS = [
     bg: "bg-gw-blue",
     title: "Join the Community",
     description:
-      "Create your free profile and instantly connect with thousands who understand what you\u2019re going through.",
+      "Create your free profile and instantly connect with others who understand what you\u2019re going through.",
   },
   {
     number: 2,
@@ -354,11 +354,11 @@ export default async function Home() {
               Community Insights
             </span>
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-gw-navy mb-6">
-              What 10,000+ Members Have Discovered
+              Community-Sourced Insights
             </h2>
             <p className="text-lg text-gw-text-gray max-w-2xl mx-auto">
-              Real patterns surfaced from real experiences. These insights come
-              from our community&apos;s collective knowledge.
+              {seedInsights.length} patterns surfaced from real experiences and
+              research. New insights are added as the community grows.
             </p>
           </div>
 
