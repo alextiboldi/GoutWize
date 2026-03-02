@@ -14,6 +14,7 @@ import {
   computeTriedItCounts,
 } from "@/components/app/tried-it-summary";
 import { UpvoteButton } from "@/components/app/upvote-button";
+import { MarkdownContent } from "@/components/app/markdown-content";
 
 export interface PostDetail {
   id: string;
@@ -348,9 +349,9 @@ export default function PostDetailClient({
           {post.title}
         </h1>
 
-        <p className="mt-3 text-sm text-gw-navy leading-relaxed whitespace-pre-wrap">
-          {post.body}
-        </p>
+        <div className="mt-3">
+          <MarkdownContent content={post.body} variant="full" />
+        </div>
 
         {showDisclaimer && (
           <p className="mt-3 text-xs text-gw-text-gray/70 bg-amber-50 px-3 py-2 rounded-lg">
@@ -424,9 +425,7 @@ export default function PostDetailClient({
                   <TriedItBadge value={comment.tried_it} />
                 </div>
               )}
-              <p className="text-sm text-gw-navy leading-relaxed whitespace-pre-wrap">
-                {comment.body}
-              </p>
+              <MarkdownContent content={comment.body} variant="full" />
               <div className="mt-2 flex items-center gap-2 text-xs text-gw-text-gray">
                 <span className="font-medium">
                   {comment.profiles?.username ?? "Anonymous"}

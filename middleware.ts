@@ -41,10 +41,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Allow public routes through
+  // Allow public routes and API webhooks through
   if (
     PUBLIC_ROUTES.includes(pathname) ||
-    pathname.startsWith("/post/")
+    pathname.startsWith("/post/") ||
+    pathname.startsWith("/api/")
   ) {
     return supabaseResponse;
   }

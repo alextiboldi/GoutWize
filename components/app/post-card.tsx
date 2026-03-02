@@ -6,6 +6,7 @@ import { POST_CATEGORIES } from "@/lib/constants";
 import { timeAgo } from "@/lib/utils";
 import { UpvoteButton } from "@/components/app/upvote-button";
 import { TriedItSummary } from "@/components/app/tried-it-summary";
+import { MarkdownContent } from "@/components/app/markdown-content";
 
 interface TriedItCounts {
   worked: number;
@@ -67,7 +68,7 @@ export function PostCard({
       </h3>
 
       <p className="mt-1 text-sm text-gw-text-gray leading-relaxed">
-        {truncatedBody}
+        <MarkdownContent content={truncatedBody} variant="preview" />
       </p>
 
       {triedItCounts && (
