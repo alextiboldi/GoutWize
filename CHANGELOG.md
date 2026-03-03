@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.47.3](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.47.2...goutwize-v0.47.3) (2026-03-03)
+
+
+### Bug Fixes
+
+* add top-level error catch to auth hook for debugging ([0957616](https://github.com/alextiboldi/GoutWize/commit/0957616556efd1a9b67284418bc9dfc359508209))
+* debug auth hook 500 with error details in response ([f9410a1](https://github.com/alextiboldi/GoutWize/commit/f9410a12a5f51e8344aba9d72b690ad148a4a704))
+
 ## [0.47.2](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.47.1...goutwize-v0.47.2) (2026-03-03)
 
 
