@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.47.2](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.47.1...goutwize-v0.47.2) (2026-03-03)
+
+
+### Bug Fixes
+
+* auth hook 500 — middleware consuming request body ([0a65fa0](https://github.com/alextiboldi/GoutWize/commit/0a65fa06dac4fbf764118728af212a37fdfa72bb))
+* skip middleware for all API routes and add auth hook logging ([b2df646](https://github.com/alextiboldi/GoutWize/commit/b2df646ff69884da27ca6e6c8c901f9f982ee8a0))
+
 ## [0.47.1](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.47.0...goutwize-v0.47.1) (2026-03-02)
 
 
