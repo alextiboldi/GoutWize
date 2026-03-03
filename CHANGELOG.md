@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.47.4](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.47.3...goutwize-v0.47.4) (2026-03-03)
+
+
+### Bug Fixes
+
+* timestamps showing wrong time due to missing UTC suffix ([0dd9295](https://github.com/alextiboldi/GoutWize/commit/0dd92955502578070ff8238c195320207c8a9941))
+* treat Supabase timestamps as UTC in timeAgo ([7c43f4f](https://github.com/alextiboldi/GoutWize/commit/7c43f4fa62d52af862767f3d42296d2915c882f2))
+
 ## [0.47.3](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.47.2...goutwize-v0.47.3) (2026-03-03)
 
 
