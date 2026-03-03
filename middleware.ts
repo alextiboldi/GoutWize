@@ -4,8 +4,9 @@ import { NextResponse, type NextRequest } from "next/server";
 const PUBLIC_ROUTES = ["/", "/login", "/auth/callback", "/banned"];
 
 export async function middleware(request: NextRequest) {
-  // Skip middleware entirely for bot API routes to preserve the request body
-  if (request.nextUrl.pathname.startsWith("/api/bot/")) {
+  // Skip middleware entirely for API routes with POST bodies to prevent
+  // the Supabase session handler from consuming the request body stream
+  if (request.nextUrl.pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
 

@@ -48,7 +48,8 @@ export async function POST(req: NextRequest) {
   let payload: AuthHookPayload;
   try {
     payload = wh.verify(rawBody, headers) as AuthHookPayload;
-  } catch {
+  } catch (err) {
+    console.error("Webhook signature verification failed:", err);
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
@@ -90,5 +91,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  console.log("Auth email sent successfully:", { type, email: user.email });
   return NextResponse.json({});
 }
