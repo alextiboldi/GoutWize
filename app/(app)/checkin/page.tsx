@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
+import { WebHaptics } from "web-haptics";
 import { createClient } from "@/lib/supabase/client";
 import { useToastStore } from "@/lib/toast-store";
 import {
@@ -21,6 +22,8 @@ const STRESS_LEVELS = [
 
 export default function CheckinPage() {
   const router = useRouter();
+  const haptics = useRef<WebHaptics>(null!);
+  if (!haptics.current) haptics.current = new WebHaptics();
   const [mood, setMood] = useState<string | null>(null);
   const [hydration, setHydration] = useState<string | null>(null);
   const [alcohol, setAlcohol] = useState<string | null>(null);
@@ -69,6 +72,7 @@ export default function CheckinPage() {
         console.error("Checkin upsert error:", upsertError);
         setError(upsertError.message || "Failed to save check-in.");
       } else {
+        haptics.current?.trigger("success");
         setDone(true);
         useToastStore.getState().add("Check-in saved!");
         setTimeout(() => router.push("/feed"), 1200);

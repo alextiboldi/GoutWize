@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
+import { WebHaptics } from "web-haptics";
 import { createClient } from "@/lib/supabase/client";
 import { useToastStore } from "@/lib/toast-store";
 import { FLARE_JOINTS } from "@/lib/constants";
@@ -11,6 +12,8 @@ import { reliefTips } from "@/lib/seed-data";
 
 export default function FlarePage() {
   const router = useRouter();
+  const haptics = useRef<WebHaptics>(null!);
+  if (!haptics.current) haptics.current = new WebHaptics();
   const [joint, setJoint] = useState("big_toe");
   const [severity, setSeverity] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,6 +49,7 @@ export default function FlarePage() {
         console.error("Flare insert error:", insertError);
         setError(insertError.message || "Failed to log flare.");
       } else {
+        haptics.current?.trigger("success");
         useToastStore.getState().add("Flare logged. Hang in there.");
         setLogged(true);
       }
