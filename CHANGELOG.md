@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.48.0](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.47.4...goutwize-v0.48.0) (2026-03-06)
+
+
+### Features
+
+* add article detail page with OpenGraph metadata ([c00b922](https://github.com/alextiboldi/GoutWize/commit/c00b922b4b65c4dcfbcbbf927d3526c8e8e0402d))
+* add Article model and migration ([0bc2606](https://github.com/alextiboldi/GoutWize/commit/0bc2606f3653370a4f54edb117e5c4fbf888b25c))
+* add articles header and mobile nav components ([3fde739](https://github.com/alextiboldi/GoutWize/commit/3fde739d8212da323e7663e571525e460b0bf98a))
+* add articles listing page ([2120600](https://github.com/alextiboldi/GoutWize/commit/212060075f288e668bb80adde900461f08e1ee76))
+* add articles to navigation and public routes ([dcca300](https://github.com/alextiboldi/GoutWize/commit/dcca300ce5b5d6f3491184249ad8c94b032451b3))
+* add bot article API route ([14919ea](https://github.com/alextiboldi/GoutWize/commit/14919ea491c3d416f6a5f570d3514d3d569ba10e))
+* add haptic feedback on check-in and flare logging success ([44734fd](https://github.com/alextiboldi/GoutWize/commit/44734fdbe3937c758675214e9256ff6803cd423c))
+* add public articles section with bot API ([a147833](https://github.com/alextiboldi/GoutWize/commit/a147833d4b110aa0654a3b6fcc8c0461014fa1db))
+* add pull-to-refresh on feed page ([1d41f2b](https://github.com/alextiboldi/GoutWize/commit/1d41f2b1938214b4dfd80ddc9fbb87cf5ccb9d30))
+
 ## [0.47.4](https://github.com/alextiboldi/GoutWize/compare/goutwize-v0.47.3...goutwize-v0.47.4) (2026-03-03)
 
 
