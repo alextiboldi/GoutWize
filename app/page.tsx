@@ -21,6 +21,7 @@ const NAV_LINKS = [
   { href: "#how-it-works", label: "How It Works" },
   { href: "#features", label: "Features" },
   { href: "#community", label: "Community" },
+  { href: "/articles", label: "Articles" },
 ];
 
 const PAIN_POINTS = [
@@ -159,7 +160,7 @@ const FOOTER_LINKS = {
   Company: [
     { href: "#", label: "About Us" },
     { href: "#community", label: "Community" },
-    { href: "#", label: "Blog" },
+    { href: "/articles", label: "Articles" },
     { href: "#", label: "Contact" },
   ],
   Support: [

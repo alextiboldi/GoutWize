@@ -5,13 +5,13 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 
 const NAV_LINKS = [
-  { href: "#how-it-works", label: "How It Works" },
-  { href: "#features", label: "Features" },
-  { href: "#community", label: "Community" },
+  { href: "/#how-it-works", label: "How It Works" },
+  { href: "/#features", label: "Features" },
+  { href: "/#community", label: "Community" },
   { href: "/articles", label: "Articles" },
 ];
 
-export function MobileNav() {
+export function ArticlesMobileNav() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -28,14 +28,14 @@ export function MobileNav() {
         <div className="lg:hidden absolute top-full left-0 w-full bg-white border-t border-gw-border shadow-lg z-40">
           <nav className="flex flex-col px-4 py-4 space-y-3">
             {NAV_LINKS.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className="text-gw-navy font-medium py-2 border-b border-gw-border"
                 onClick={() => setIsOpen(false)}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
             <Link
               href="/login"
