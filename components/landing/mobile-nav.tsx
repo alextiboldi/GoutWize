@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { href: "#how-it-works", label: "How It Works" },
   { href: "#features", label: "Features" },
   { href: "#community", label: "Community" },
+  { href: "/articles", label: "Articles" },
 ];
 
 export function MobileNav() {

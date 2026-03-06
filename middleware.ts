@@ -51,6 +51,7 @@ export async function middleware(request: NextRequest) {
   if (
     PUBLIC_ROUTES.includes(pathname) ||
     pathname.startsWith("/post/") ||
+    pathname.startsWith("/articles") ||
     pathname.startsWith("/api/")
   ) {
     return supabaseResponse;
