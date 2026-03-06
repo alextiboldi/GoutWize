@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, BarChart3, Flame, Search, Sparkles } from "lucide-react";
 import type { Insight } from "@/lib/types";
@@ -8,6 +9,7 @@ import { PostCard } from "@/components/app/post-card";
 import { PollCard, type PollOptionRow } from "@/components/app/poll-card";
 import { InstallPrompt } from "@/components/app/install-prompt";
 import { POST_CATEGORIES, FLARE_JOINTS } from "@/lib/constants";
+import { PullToRefresh } from "@/components/pull-to-refresh";
 
 export interface PostRow {
   id: string;
@@ -76,11 +78,19 @@ export default function FeedClient({
   checkinStreak,
   userActiveFlare,
 }: FeedClientProps) {
+  const router = useRouter();
+  const [isRefreshing, startTransition] = useTransition();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"newest" | "discussed">("newest");
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  const handleRefresh = () => {
+    startTransition(() => {
+      router.refresh();
+    });
+  };
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -138,6 +148,7 @@ export default function FeedClient({
   }, [posts, polls, activeCategory, searchQuery, sortBy]);
 
   return (
+    <PullToRefresh onRefresh={handleRefresh} isRefreshing={isRefreshing}>
     <div className="space-y-4">
       {/* User active flare banner */}
       {userActiveFlare && (
@@ -413,5 +424,6 @@ export default function FeedClient({
         )}
       </div>
     </div>
+    </PullToRefresh>
   );
 }
